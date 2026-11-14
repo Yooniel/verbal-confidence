@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Collected activations (12.8 GB): regenerate with scripts/collect.py
+results/acts/
+
+# Per-task probe outputs, merged into results/probe/probe.json
+results/probe/parts/
+
+# Scheduler logs
+logs/
+
+# Scratch
+*.tmp
+.DS_Store

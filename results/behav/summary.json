@@ -1,0 +1,208 @@
+{
+ "n_total": 9960,
+ "n_valid": 9944,
+ "dropped": {
+  "answer longer than 12 tokens": 16
+ },
+ "accuracy": 0.8179806918744972,
+ "accuracy_em_only": 0.7306918744971842,
+ "accuracy_judge_only": 0.8175784392598552,
+ "em_and_judge_agree": 0.912308930008045,
+ "em_true_judge_false": 4,
+ "em_false_judge_true": 868,
+ "ece": 0.05073411102172166,
+ "auroc_verbal_conf": 0.8214121000859905,
+ "class_counts": {
+  "No chance": 478,
+  "Really unlikely": 492,
+  "Chances are slight": 178,
+  "Unlikely": 58,
+  "Less than even": 2,
+  "Better than even": 0,
+  "Likely": 678,
+  "Very good chance": 1,
+  "Highly likely": 3207,
+  "Almost certain": 4850
+ },
+ "class_accuracy": {
+  "No chance": 0.35564853556485354,
+  "Really unlikely": 0.35772357723577236,
+  "Chances are slight": 0.43258426966292135,
+  "Unlikely": 0.41379310344827586,
+  "Less than even": 0.5,
+  "Better than even": null,
+  "Likely": 0.5752212389380531,
+  "Very good chance": 0.0,
+  "Highly likely": 0.8178983473651388,
+  "Almost certain": 0.9635051546391753
+ },
+ "n_high": 8058,
+ "n_low": 1148,
+ "n_low_test": 815,
+ "n_low_collect": 333,
+ "mean_conf": 0.7983004827031377,
+ "n_p0_conf_valid": 9942,
+ "r_p0conf_p1conf": 0.5894675173817887,
+ "r_logprob_p0conf": 0.25636755962869534,
+ "r_logprob_p1conf": 0.3283163636440977,
+ "auroc_mean_logprob": 0.7975049142335493,
+ "min_prompt": {
+  "pm": {
+   "kind": "min",
+   "panl": "\n\n",
+   "first_token_is_digit": 0.23018905872888173,
+   "digit_counts": {
+    "0": 1,
+    "1": 2,
+    "2": 0,
+    "3": 2,
+    "4": 0,
+    "5": 4,
+    "6": 2,
+    "7": 1589,
+    "8": 4395,
+    "9": 3949
+   },
+   "digit_accuracy": {
+    "0": 1.0,
+    "1": 1.0,
+    "2": null,
+    "3": 1.0,
+    "4": null,
+    "5": 0.75,
+    "6": 1.0,
+    "7": 0.801762114537445,
+    "8": 0.7833902161547213,
+    "9": 0.8627500633071664
+   },
+   "ece": 0.07290828640386159,
+   "auroc": 0.5550782337830293,
+   "auroc_digit_first_only": 0.5630557148462259,
+   "r_digit_p1conf": 0.2004854977974421
+  },
+  "pmq": {
+   "kind": "minq",
+   "panl": "\n\n",
+   "first_token_is_digit": 1.0,
+   "digit_counts": {
+    "0": 87,
+    "1": 2,
+    "2": 0,
+    "3": 1,
+    "4": 0,
+    "5": 1,
+    "6": 3,
+    "7": 37,
+    "8": 164,
+    "9": 9649
+   },
+   "digit_accuracy": {
+    "0": 0.20689655172413793,
+    "1": 0.5,
+    "2": null,
+    "3": 0.0,
+    "4": null,
+    "5": 0.0,
+    "6": 0.6666666666666666,
+    "7": 0.2972972972972973,
+    "8": 0.42073170731707316,
+    "9": 0.8325215048191522
+   },
+   "ece": 0.12429605792437651,
+   "auroc": 0.5475248156907706,
+   "auroc_digit_first_only": 0.5475248156907706,
+   "r_digit_p1conf": 0.33357539158129573
+  },
+  "pm1": {
+   "kind": "min",
+   "panl": "\n",
+   "first_token_is_digit": 0.06777956556717618,
+   "digit_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 1,
+    "6": 1,
+    "7": 2030,
+    "8": 2159,
+    "9": 5753
+   },
+   "digit_accuracy": {
+    "0": null,
+    "1": null,
+    "2": null,
+    "3": null,
+    "4": null,
+    "5": 1.0,
+    "6": 1.0,
+    "7": 0.7187192118226601,
+    "8": 0.7698008337193145,
+    "9": 0.871023813662437
+   },
+   "ece": 0.06956958970233304,
+   "auroc": 0.6105863865881838,
+   "auroc_digit_first_only": 0.6245868248494703,
+   "r_digit_p1conf": 0.34377234750344887
+  },
+  "pmq1": {
+   "kind": "minq",
+   "panl": "\n",
+   "first_token_is_digit": 1.0,
+   "digit_counts": {
+    "0": 75,
+    "1": 7,
+    "2": 5,
+    "3": 1,
+    "4": 0,
+    "5": 1,
+    "6": 5,
+    "7": 53,
+    "8": 276,
+    "9": 9521
+   },
+   "digit_accuracy": {
+    "0": 0.17333333333333334,
+    "1": 0.2857142857142857,
+    "2": 0.4,
+    "3": 0.0,
+    "4": null,
+    "5": 0.0,
+    "6": 0.4,
+    "7": 0.32075471698113206,
+    "8": 0.4057971014492754,
+    "9": 0.8387774393446067
+   },
+   "ece": 0.12242558326629116,
+   "auroc": 0.5671180380559333,
+   "auroc_digit_first_only": 0.5671180380559333,
+   "r_digit_p1conf": 0.3687209117464692
+  }
+ },
+ "min_key": "pmq",
+ "vec_low_classes": {
+  "No chance": 25
+ },
+ "vec_high_classes": {
+  "Almost certain": 25
+ },
+ "set_sizes": {
+  "steer": 200,
+  "patch": 200,
+  "noise": 400,
+  "swap_high": 400,
+  "swap_low_pool": 815,
+  "swap_low": 400,
+  "calib": 100,
+  "attn_cat": 500,
+  "attn_min": 500,
+  "min_kind": 4,
+  "min_panl": 2,
+  "min_key": 3,
+  "vec_low": 25,
+  "vec_high": 25,
+  "patch_p0": 200
+ },
+ "swap_low_unique": 400
+}
