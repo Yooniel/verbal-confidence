@@ -19,6 +19,9 @@ import matplotlib.pyplot as plt
 from vc import plotting as P
 from vc.data import read_jsonl
 from vc.env import DATA, FIGURES, RESULTS
+from vc.metrics import have as _have
+from vc.metrics import ldiff, mets, ms, noise_floor, peak
+from vc.metrics import load as _load
 from vc.prompts import CLASSES, HIGH_CLASSES, LOW_CLASSES, MIDPOINTS
 
 P.setup()
@@ -28,58 +31,11 @@ S = {}  # summary
 
 
 def have(exp):
-    return len(glob(str(RESULTS / exp / "shard*.pt"))) > 0
+    return _have(RESULTS, exp)
 
 
 def load(exp):
-    parts = [torch.load(f, weights_only=False) for f in sorted(glob(str(RESULTS / exp / "shard*.pt")))]
-    out = dict(parts[0])
-    for k in ("logits", "ref", "clean", "corrupt", "ood"):
-        if k in out:
-            out[k] = torch.cat([p[k] for p in parts], 0).numpy()
-    for k in ("idx", "recs"):
-        if k in out:
-            out[k] = [x for p in parts for x in p[k]]
-    return out
-
-
-def ldiff(z, y):
-    """z [..., 10], y [...] int -> z[y] - mean(z[others])"""
-    zy = np.take_along_axis(z, y[..., None], -1)[..., 0]
-    return zy - (z.sum(-1) - zy) / 9.0
-
-
-def mets(logits, base):
-    """logits [n, V, L, 10]; base = reference logits, either [n, 10] (clean run) or [n, V, L, 10] (the unedited
-    rows computed in the same forward pass as each variant). Returns dict of [n, V, L] arrays."""
-    if base.ndim == 2:
-        base = np.broadcast_to(base[:, None, None], logits.shape)
-    y = base.argmax(-1)
-    conf = MID[logits.argmax(-1)]
-    ld = ldiff(logits, y)
-    return {
-        "conf": conf,
-        "dconf": conf - MID[y],
-        "ld": ld,
-        "dld": ld - ldiff(base, y),
-        "change": (logits.argmax(-1) != y).astype(float),
-    }
-
-
-def noise_floor(D):
-    """Share of trials whose argmax class differs between the unedited rows of the resumed passes and the
-    full clean pass (pure numerical noise from the different batch shapes), per layer."""
-    return 100 * (D["ref"].argmax(-1) != D["clean"].argmax(-1)[:, None, None]).mean((0, 1))
-
-
-def ms(a):
-    """mean and SEM over trials (axis 0)."""
-    return a.mean(0), P.sem(a, 0)
-
-
-def peak(layers, mean, mode="max"):
-    i = int(np.argmax(mean) if mode == "max" else np.argmin(mean))
-    return {"layer": int(layers[i]), "value": float(mean[i])}
+    return _load(RESULTS, exp)
 
 
 trials = read_jsonl(DATA / "trials.jsonl") if (DATA / "trials.jsonl").exists() else None
@@ -87,31 +43,54 @@ trials = read_jsonl(DATA / "trials.jsonl") if (DATA / "trials.jsonl").exists() e
 # =====================================================================================================
 # Behaviour (Fig. 9)
 # =====================================================================================================
+PAPER_FIG9_COUNTS = [119, 96, 259, 2, 1, 0, 304, 4, 1632, 5441]  # paper Fig. 9B, printed on the bars
+PAPER_FIG9_ACC = {0: 0.17, 1: 0.21, 2: 0.26, 6: 0.375, 8: 0.63, 9: 0.855}  # paper Fig. 9A, read off the plot
+
 if (RESULTS / "behav" / "summary.json").exists():
     B = json.load(open(RESULTS / "behav" / "summary.json"))
     S["behaviour"] = B
-    fig, axes = plt.subplots(1, 2, figsize=(9.2, 3.6), gridspec_kw={"width_ratios": [1, 1.25]})
-    ax = axes[0]
-    ax.plot([0, 1], [0, 1], color=P.AXIS, lw=1.2, zorder=1)
-    ax.annotate("perfect calibration", (0.56, 0.60), rotation=41, color=P.MUTED, fontsize=7.5, ha="center", va="bottom")
-    n = np.array([B["class_counts"][c] for c in CLASSES])
-    acc = np.array([B["class_accuracy"][c] if B["class_accuracy"][c] is not None else np.nan for c in CLASSES])
-    keep = n >= 20
-    ax.scatter(MID[keep], acc[keep], s=18 + 260 * n[keep] / n.max(), color=P.BLUE, edgecolor=P.SURFACE, linewidth=1.2, zorder=3)
-    for i, (m, a, k) in enumerate(zip(MID[keep], acc[keep], n[keep])):
-        ax.annotate(f"n={k}", (m, a), textcoords="offset points", xytext=(0, 9 if i % 2 == 0 else -15), ha="center", fontsize=7, color=P.INK2)
-    ax.set_xlim(0, 1.02), ax.set_ylim(0, 1.02)
-    ax.set_xlabel("Verbal confidence (class midpoint)"), ax.set_ylabel("Accuracy")
-    ax.set_title(f"Calibration: ECE {B['ece']:.2f}, AUROC {B['auroc_verbal_conf']:.2f}")
-    ax.grid(True, axis="both")
-    ax = axes[1]
-    bars = ax.bar(np.arange(10), n, width=0.55, color=P.BLUE, zorder=3)
-    for i, k in enumerate(n):
-        ax.annotate(str(k), (i, k), textcoords="offset points", xytext=(0, 2), ha="center", fontsize=7.5, color=P.INK2)
-    ax.set_xticks(np.arange(10))
-    ax.set_xticklabels(CLASSES, rotation=40, ha="right")
-    ax.set_ylabel("Trials")
-    ax.set_title(f"Confidence classes (n={B['n_valid']}, accuracy {100*B['accuracy']:.1f}%)")
+    S["behaviour"]["paper_fig9"] = {"class_counts": dict(zip(CLASSES, PAPER_FIG9_COUNTS)), "class_accuracy_read_off": {CLASSES[c]: a for c, a in PAPER_FIG9_ACC.items()}}
+    pn = np.array(PAPER_FIG9_COUNTS)
+    # two phases: confidence stated together with the answer (Phase 0; what the paper's Fig. 9 matches) and
+    # confidence for the answer fed back in the Fig. 8 prompt (Phase 1; what every experiment acts on)
+    PH = [("Confidence stated with the answer (Phase 0)", B["phase0"]["class_counts"], B["phase0"]["class_accuracy"], B["phase0"]["ece"], B["phase0"]["auroc_verbal_conf"], True),
+          ("Confidence for the fed-back answer (Phase 1)", B["class_counts"], B["class_accuracy"], B["ece"], B["auroc_verbal_conf"], False)]
+    fig, axes = plt.subplots(2, 2, figsize=(9.6, 7.4), gridspec_kw={"width_ratios": [1, 1.3]})
+    for r, (title, counts, accs, ece_, auc_, with_paper) in enumerate(PH):
+        n = np.array([counts[c] for c in CLASSES])
+        acc = np.array([accs[c] if accs[c] is not None else np.nan for c in CLASSES])
+        keep = n >= 20
+        ax = axes[r, 0]
+        ax.plot([0, 1], [0, 1], color=P.AXIS, lw=1.2, zorder=1)
+        ax.scatter(MID[keep], acc[keep], s=18 + 260 * n[keep] / n.max(), color=P.BLUE, edgecolor=P.SURFACE, linewidth=1.2, zorder=3, label="this replication")
+        if with_paper:
+            pc = sorted(PAPER_FIG9_ACC)
+            ax.scatter(MID[pc], [PAPER_FIG9_ACC[c] for c in pc], s=46, facecolor="none", edgecolor=P.INK2, linewidth=1.4, zorder=4, label="paper, Fig. 9")
+            ax.legend(loc="upper left")
+        ax.set_xlim(0, 1.02), ax.set_ylim(0, 1.02)
+        ax.set_xlabel("Verbal confidence (class midpoint)"), ax.set_ylabel("Accuracy")
+        ax.set_title(title)
+        ax.text(0.97, 0.05, f"ECE {ece_:.2f}, AUROC {auc_:.2f}" + ("\npaper: ECE 0.12, AUROC 0.71" if with_paper else ""),
+                transform=ax.transAxes, ha="right", va="bottom", fontsize=8.5, color=P.INK2)
+        ax.grid(True, axis="both")
+        ax = axes[r, 1]
+        x = np.arange(10)
+        if with_paper:
+            ax.bar(x - 0.2, 100 * n / n.sum(), width=0.36, color=P.BLUE, zorder=3, label="this replication")
+            ax.bar(x + 0.2, 100 * pn / pn.sum(), width=0.36, color=P.MUTED, zorder=3, label="paper, Fig. 9")
+            ax.legend(loc="upper left")
+        else:
+            ax.bar(x, 100 * n / n.sum(), width=0.55, color=P.BLUE, zorder=3)
+        for i, k in enumerate(n):
+            if k:
+                ax.annotate(f"{100*k/n.sum():.0f}" if 100 * k / n.sum() >= 1 else "<1", (i - (0.2 if with_paper else 0), 100 * k / n.sum()),
+                            textcoords="offset points", xytext=(0, 2), ha="center", fontsize=7.5, color=P.INK2)
+        ax.set_xticks(x)
+        ax.set_xticklabels(CLASSES if r == 1 else [""] * 10, rotation=40, ha="right")
+        ax.set_ylabel("Trials (%)")
+        ax.set_title("Share of trials in each confidence class")
+    fig.suptitle(f"Gemma 3 27B on TriviaQA: n = {B['n_valid']:,}, accuracy {100*B['accuracy']:.1f}% (GPT-4o-mini grader; paper 77.4%)" if B.get("grader") == "gpt"
+                 else f"Gemma 3 27B on TriviaQA: n = {B['n_valid']:,}, accuracy {100*B['accuracy']:.1f}%", fontsize=10.5)
     fig.tight_layout()
     P.save(fig, FIGURES / "fig09_calibration.png")
 
@@ -200,8 +179,12 @@ if have("steer"):
 # =====================================================================================================
 # Patching (Fig. 3)
 # =====================================================================================================
-if have("patch"):
-    D = load("patch")
+# Main configuration: the one closest to the paper's text (C.1.4) - trials chosen by Phase-0 confidence, every
+# answer position replaced by a mean over all 100 calibration prompts. Falls back to the first reading
+# (Phase-1 top-3 trials, per-answer-position means) if that run is not there.
+PATCH_MAIN = next((e for e in ("patch_p0_cabs", "patch") if have(e)), None)
+if PATCH_MAIN:
+    D = load(PATCH_MAIN)
     L, names = D["layers"], D["names"]
     M = mets(D["logits"], D["clean"])
     y = D["clean"].argmax(-1)
@@ -222,7 +205,8 @@ if have("patch"):
         ax.set_ylabel(lab)
     P.layer_axis(axes[-1], L)
     axes[1].legend(loc="center left", ncol=1)
-    axes[0].set_title(f"Activation patching after answer-token corruption (n={len(y)} high-confidence trials)")
+    who = "trials with a top-3 class in Phase 0" if "p0" in PATCH_MAIN else "high-confidence trials"
+    axes[0].set_title(f"Activation patching after answer-token corruption (n={len(y)} {who})")
     fig.tight_layout()
     P.save(fig, FIGURES / "fig03_patching.png")
 
@@ -235,7 +219,7 @@ if have("patch"):
     ref_y = np.broadcast_to(y[:, None, None], D["ref"].shape[:-1])
     S["patch_ref_check"] = {"max_abs_AC_minus_ref": float(np.abs(D["logits"][:, names.index("AC")] - D["ref"][:, names.index("AC")]).max()),
                             "corrupt_ld_same_pass_by_layer": ldiff(D["ref"], ref_y)[:, 0].mean(0).tolist()}
-    S["patch"] = {"n": len(y), "clean": {"ld": float(clean_ld.mean()), "conf": float(clean_conf.mean())},
+    S["patch"] = {"n": len(y), "config": PATCH_MAIN, "clean": {"ld": float(clean_ld.mean()), "conf": float(clean_conf.mean())},
                   "corrupt": {"ld": float(corr_ld.mean()), "conf": float(corr_conf.mean()), "change": float(corr_change.mean())},
                   "layers": list(L)}
     for pos in names:
@@ -560,11 +544,150 @@ def key_numbers(tag):
     return out
 
 
-for tag in ["_nl1", "_p0"]:  # _nl1: single newline after the answer; _p0: patching trials selected by Phase-0 confidence
+# _nl1: single newline after the answer; _p0: patching trials selected by Phase-0 confidence;
+# _cabs / _cglobal: answer corruption by absolute-position / global mean embeddings (interv.py --corrupt)
+for tag in ["_nl1", "_p0", "_cabs", "_cglobal", "_p0_cabs", "_p0_cglobal"]:
     kn = key_numbers(tag)
     if kn:
         S["robust" + tag] = kn
 S["robust_main_reference"] = key_numbers("")
+
+
+# =====================================================================================================
+# Sensitivity: what the sizes of the effects depend on (README "What the effect sizes depend on")
+# =====================================================================================================
+def top2_margin(z):
+    """Logit gap between the two most likely classes."""
+    s = np.sort(z, -1)
+    return s[..., -1] - s[..., -2]
+
+
+def boot_ci(fn, idx, B=1000):
+    """95% bootstrap interval of fn(trial indices), resampling trials."""
+    r = np.random.default_rng(0)
+    v = [fn(idx[r.integers(0, len(idx), len(idx))]) for _ in range(B)]
+    return [float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))]
+
+
+SENS = {}
+SENS_PATCH = ("patch_cabs", "patch_p0_cabs") if have("patch_cabs") and have("patch_p0_cabs") else ("patch", "patch_p0")
+if all(have(e) for e in SENS_PATCH) and trials is not None:
+    SENS_LAYER = 25 if SENS_PATCH[0] == "patch_cabs" else 22  # the layer where PANL recovery peaks in these runs
+    # Restoring PANL there: recovery as a function of how far the corruption pushes the model towards "No chance"
+    # and of the answer length. Main and Phase-0-selected runs pooled, trials whose clean class is in the top three.
+    rows = []
+    for exp in SENS_PATCH:
+        D = load(exp)
+        v, li = D["names"].index("PANL"), list(D["layers"]).index(SENS_LAYER)
+        y, pat, ar = D["clean"].argmax(-1), D["logits"][:, v, li], np.arange(len(D["idx"]))
+        rows.append({"y": y, "ldc": ldiff(D["clean"], y), "ldx": ldiff(D["corrupt"], y), "ldp": ldiff(pat, y),
+                     "cc": MID[y], "cx": MID[D["corrupt"].argmax(-1)], "cp": MID[pat.argmax(-1)],
+                     "restored": (pat.argmax(-1) == y).astype(float), "margin": D["corrupt"][:, 0] - D["corrupt"][ar, y],
+                     "n_a": np.array([trials[i]["n_a"] for i in D["idx"]])})
+    T = {k: np.concatenate([r[k] for r in rows]) for k in rows[0]}
+    rec_ld = lambda i: 100 * (T["ldp"][i].mean() - T["ldx"][i].mean()) / (T["ldc"][i].mean() - T["ldx"][i].mean())
+    rec_cf = lambda i: 100 * (T["cp"][i].mean() - T["cx"][i].mean()) / (T["cc"][i].mean() - T["cx"][i].mean())
+
+    def group(i):
+        return {"n": len(i), "no_chance_margin": float(T["margin"][i].mean()), "answer_tokens": float(T["n_a"][i].mean()),
+                "clean_conf": float(T["cc"][i].mean()), "ld_recovery_pct": float(rec_ld(i)), "ld_recovery_ci": boot_ci(rec_ld, i),
+                "conf_recovery_pct": float(rec_cf(i)), "conf_recovery_ci": boot_ci(rec_cf, i),
+                "patched_conf": float(T["cp"][i].mean()), "clean_class_restored_pct": float(100 * T["restored"][i].mean())}
+
+    top = np.where(T["y"] >= 7)[0]
+    SENS["patch_PANL"] = {
+        "runs": list(SENS_PATCH), "layer": SENS_LAYER,
+        "all": group(top),
+        "by_margin_quartile": [group(i) for i in np.array_split(top[np.argsort(T["margin"][top], kind="stable")], 4)],
+        "by_answer_tokens": {lab: group(top[(T["n_a"][top] >= a) & (T["n_a"][top] <= b)])
+                             for lab, a, b in (("1", 1, 1), ("2", 2, 2), ("3-4", 3, 4), ("5+", 5, 10**6))},
+    }
+
+if have("swap"):
+    # Same-confidence swaps at PANL, L25: token change against the recipient's distance from a class boundary
+    D = load("swap")
+    kind = np.array([r["kind"] for r in D["recs"]])
+    li, mg = list(D["layers"]).index(25), top2_margin(D["clean"])
+    SENS["swap_same_confidence_PANL_L25"] = {}
+    for k in ("low", "high"):
+        v, m = D["names"].index(f"PANL|{k}"), kind == k
+        ch = D["logits"][:, v, li].argmax(-1) != D["ref"][:, v, li].argmax(-1)
+        SENS["swap_same_confidence_PANL_L25"][f"{k}->{k}"] = {
+            "median_top2_margin": float(np.median(mg[m])), "pct_within_1_logit": float(100 * (mg[m] < 1).mean()),
+            "change_pct_by_top2_margin": {lab: {"n": int((m & s).sum()), "change_pct": float(100 * ch[m & s].mean())}
+                                          for lab, s in (("<1", mg < 1), ("1-3", (mg >= 1) & (mg < 3)), (">=3", mg >= 3))}}
+
+if have("attn_cat"):
+    # Attention blocking, categorical prompt: same-pass reference vs a separately computed clean run
+    D = load("attn_cat")
+    names, lg = D["names"], D["logits"]
+    same, sep, mg = lg[:, 0].argmax(-1), D["clean"].argmax(-1), top2_margin(D["clean"])
+    SENS["attn_cat"] = {"unedited_rows_vs_clean_run_change_pct": float(100 * (same != sep).mean()),
+                        "pct_within_1_logit": float(100 * (mg < 1).mean()), "conditions": {}}
+    for c in names[1:]:
+        a = lg[:, names.index(c)].argmax(-1)
+        SENS["attn_cat"]["conditions"][c] = {
+            "change_pct_vs_same_pass": float(100 * (a != same).mean()), "change_pct_vs_clean_run": float(100 * (a != sep).mean()),
+            "change_pct_within_1_logit": float(100 * (a != same)[mg < 1].mean()),
+            "change_pct_beyond_1_logit": float(100 * (a != same)[mg >= 1].mean())}
+
+if have("steer"):
+    # Steering at PANL: change in confidence against the scale, separately for high- and low-confidence trials
+    D = load("steer")
+    L, names = list(D["layers"]), D["names"]
+    dc = MID[D["logits"].argmax(-1)] - MID[D["ref"].argmax(-1)]
+    hi = MID[D["clean"].argmax(-1)] > 0.5
+    SENS["steer_PANL_dose_response"] = {
+        f"{sign}_L{lay}": {grp: {sc: float(dc[m][:, names.index(f"PANL|{sign}|{sc}"), L.index(lay)].mean()) for sc in ("1", "2", "5", "10")}
+                           for grp, m in (("all", np.ones(len(hi), bool)), ("high_conf_trials", hi), ("low_conf_trials", ~hi))}
+        for sign, lay in (("high", 24), ("low", 22))}
+# Steering at PANL with directions built from other trials (subset of layers): random tie-break draws and the
+# "most extreme trials first" tie-break, all with the current correctness labels
+alt = {}
+for tag in ("_rand1", "_rand2", "_extreme_gpt"):
+    if have("steer" + tag):
+        D = load("steer" + tag)
+        L2, nm = list(D["layers"]), D["names"]
+        dc = MID[D["logits"].argmax(-1)] - MID[D["ref"].argmax(-1)]
+        alt[tag[1:]] = {"layers": L2, "n": dc.shape[0],
+                        "dconf": {n: dc[:, nm.index(n)].mean(0).tolist() for n in nm},
+                        "peak": {n: peak(L2, dc[:, nm.index(n)].mean(0), "max" if "|high|" in n else "min") for n in nm}}
+if alt:
+    SENS["steer_PANL_other_vector_trials"] = alt
+if alt and have("steer"):
+    # figure: the main run (random tie-break, draw 0) next to the other choices of the 25 + 25 trials
+    Dm = load("steer")
+    Lm, nmm = list(Dm["layers"]), Dm["names"]
+    dm = MID[Dm["logits"].argmax(-1)] - MID[Dm["ref"].argmax(-1)]
+    sub = alt[next(iter(alt))]["layers"]
+    series = [("ties broken at random, draw 0 (main run)", P.BLUE,
+               {n: dm[:, nmm.index(n)].mean(0)[[Lm.index(l) for l in sub]] for n in nmm if n.startswith("PANL|")})]
+    for key, lab, col in (("rand1", "ties broken at random, draw 1", P.AQUA), ("rand2", "ties broken at random, draw 2", P.YELLOW),
+                          ("extreme_gpt", "most extreme trials first", P.ORANGE)):
+        if key in alt:
+            series.append((lab, col, {n: np.array(v) for n, v in alt[key]["dconf"].items()}))
+    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    xs = np.arange(len(sub))
+    for ax, sc in zip(axes, ("2", "5")):
+        P.hline(ax, 0, color=P.AXIS)
+        for lab, col, d in series:
+            P.line(ax, xs, d[f"PANL|high|{sc}"], color=col, label=lab)
+            P.line(ax, xs, d[f"PANL|low|{sc}"], color=col, hollow=True, ls=(0, (3, 1.5)), lw=1.6)
+        P.layer_axis(ax, sub)
+        ax.set_title(f"Scale {sc}")
+    axes[0].set_ylabel("Δ confidence")
+    h, lab = axes[0].get_legend_handles_labels()
+    fig.legend(h, lab, loc="lower center", ncol=4, title="Trials that define the steering direction", bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle("Steering at PANL with directions built from different trials: high vector (solid), low vector (dashed)",
+                 x=0.01, ha="left", fontsize=11, fontweight="bold")
+    fig.tight_layout(rect=(0, 0.12, 1, 1))
+    P.save(fig, FIGURES / "fig02b_steering_vector_trials.png")
+    SENS["steer_PANL_main_on_same_layers"] = {"layers": sub, "dconf": {n: v.tolist() for n, v in series[0][2].items()}}
+for key, fname in (("steering_direction_cosines", "vector_sensitivity.json"), ("attention_implementation_noise", "numtest_eager.json"),
+                   ("prompt_format_pilot", "pilot_format/summary.json")):
+    if (RESULTS / fname).exists():
+        SENS[key] = json.load(open(RESULTS / fname))
+S["sensitivity"] = SENS
 
 if (RESULTS / "ood_natural.json").exists():
     S["ood_natural"] = json.load(open(RESULTS / "ood_natural.json"))

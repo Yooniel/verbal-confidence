@@ -40,27 +40,29 @@ def pk(p, nd=2, unit=""):
 if "behaviour" in S:
     B = S["behaviour"]
     add("Behaviour", "valid trials", "7,858", f"{B['n_valid']:,}")
-    add("Behaviour", "accuracy", "77.4% (GPT-4o-mini grader)", f"{100*B['accuracy']:.1f}% (alias match or Gemma grader); {100*B['accuracy_em_only']:.1f}% alias match only")
-    add("Behaviour", "ECE (categorical prompt)", "0.12", f(B["ece"]))
-    add("Behaviour", "AUROC of verbal confidence", "0.71", f(B["auroc_verbal_conf"]))
-    cc = B["class_counts"]
+    grader = "GPT-4o-mini via OpenRouter" if B.get("grader") == "gpt" else "alias match or Gemma grader"
+    add("Behaviour", "accuracy", "77.4% (GPT-4o-mini grader)",
+        f"{100*B['accuracy']:.1f}% ({grader}); {100*B['accuracy_em_only']:.1f}% alias match only; {100*B['accuracy_gemma_or_alias']:.1f}% alias match or Gemma grader")
+    # The paper's Fig. 9 matches the confidence stated in the same generation as the answer (Phase 0), so the two
+    # phases are listed separately.
     n = B["n_valid"]
-    add("Behaviour", "share 'Almost certain' / 'Highly likely'", "69% / 21%", f"{100*cc['Almost certain']/n:.0f}% / {100*cc['Highly likely']/n:.0f}%")
-    add("Behaviour", "share of bottom-3 classes", "6.0%", f"{100*B['n_low']/n:.1f}%")
-    # Phase-0 confidence (stated in the same generation as the answer): the paper's Fig. 9 numbers look like this one
-    from sklearn.metrics import roc_auc_score
-
-    from vc.data import read_jsonl
-    from vc.env import DATA
-    from vc.prompts import CLASSES, MIDPOINTS
-
-    T = [t for t in read_jsonl(DATA / "trials.jsonl") if t["p0_conf"] is not None]
-    c0 = np.round(np.array([MIDPOINTS[t["p0_conf"]] for t in T]), 2)
-    y0 = np.array([t["correct"] for t in T])
-    k0 = np.array([t["p0_conf"] for t in T])
-    ece0 = float(sum((c0 == v).mean() * abs(y0[c0 == v].mean() - v) for v in np.unique(c0)))
-    add("Behaviour", "Phase-0 confidence (same generation as the answer): ECE / AUROC / share 'Almost certain' / 'Highly likely'",
-        "(Fig. 9 values: 0.12 / 0.71 / 69% / 21%)", f"{ece0:.2f} / {roc_auc_score(y0, c0):.2f} / {100*(k0==9).mean():.0f}% / {100*(k0==8).mean():.0f}%")
+    P0 = B["phase0"]
+    c0, a0 = P0["class_counts"], P0["class_accuracy"]
+    n0 = sum(c0.values())
+    low = ("No chance", "Really unlikely", "Chances are slight")
+    add("Behaviour", "Phase-0 confidence (stated with the answer): ECE / AUROC", "0.12 / 0.71 (Fig. 9)", f"{P0['ece']:.2f} / {P0['auroc_verbal_conf']:.2f}")
+    add("Behaviour", "Phase-0 confidence: share 'Almost certain' / 'Highly likely' / bottom-3 classes", "69% / 21% / 6.0% (Fig. 9)",
+        f"{100*c0['Almost certain']/n0:.0f}% / {100*c0['Highly likely']/n0:.0f}% / {100*sum(c0[k] for k in low)/n0:.1f}%")
+    add("Behaviour", "Phase-0 confidence: accuracy of 'Almost certain' / 'Highly likely' / 'Likely' answers", "≈ 0.86 / 0.63 / 0.38 (Fig. 9)",
+        f"{a0['Almost certain']:.2f} / {a0['Highly likely']:.2f} / {a0['Likely']:.2f}")
+    cc, ca = B["class_counts"], B["class_accuracy"]
+    add("Behaviour", "Phase-1 confidence (answer fed back; used by all experiments): ECE / AUROC", "not reported separately", f"{B['ece']:.2f} / {B['auroc_verbal_conf']:.2f}")
+    add("Behaviour", "Phase-1 confidence: share 'Almost certain' / 'Highly likely' / bottom-3 classes", "not reported separately",
+        f"{100*cc['Almost certain']/n:.0f}% / {100*cc['Highly likely']/n:.0f}% / {100*B['n_low']/n:.1f}%")
+    add("Behaviour", "Phase-1 confidence: accuracy of 'Almost certain' / 'Highly likely' / 'Likely' answers", "not reported separately",
+        f"{ca['Almost certain']:.2f} / {ca['Highly likely']:.2f} / {ca['Likely']:.2f}")
+    add("Behaviour", "balanced baseline (mean of top-3 and bottom-3 class means): Phase 0 / Phase 1", "0.55 (steering baseline, Fig. 2)",
+        f"{P0['balanced_baseline']:.2f} / {B['balanced_baseline']:.2f}")
     add("Behaviour", "AUROC of mean answer log-prob", "0.75", f(B["auroc_mean_logprob"]))
     add("Behaviour", "r(log-prob, phase-1 confidence)", "0.29", f(B["r_logprob_p1conf"]))
     add("Behaviour", "r(log-prob, phase-0 confidence)", "0.23", f(B["r_logprob_p0conf"]))
@@ -71,7 +73,7 @@ if "behaviour" in S:
 if "steer" in S:
     T = S["steer"]
     add("Steering", "baseline confidence of test trials", "0.55", f(T["baseline_conf"]))
-    for pos, ph, pl in (("PANL", "≈ +0.17 @ L24–26 (peak range L21–25)", "≈ −0.22 @ L24"), ("CC", "≈ +0.46 @ L30–34 (peak range L30–35)", "≈ −0.42 @ L30")):
+    for pos, ph, pl in (("PANL", "≈ +0.18 @ L25–26 (peak range L21–26)", "≈ −0.22 @ L24"), ("CC", "≈ +0.46 @ L30–34 (peak range L30–35)", "≈ −0.42 @ L30")):
         add("Steering", f"{pos}, scale 5: peak Δconf, high vector", ph, pk(T[pos]["scale5"]["high_peak"], 3))
         add("Steering", f"{pos}, scale 5: peak Δconf, low vector", pl, pk(T[pos]["scale5"]["low_peak"], 3))
     add("Steering", "PANL, scale 2: peak Δconf high / low", "≈ +0.16 / −0.09", f"{pk(T['PANL']['scale2']['high_peak'],3)} / {pk(T['PANL']['scale2']['low_peak'],3)}")

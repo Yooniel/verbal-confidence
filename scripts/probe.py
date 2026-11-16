@@ -34,6 +34,8 @@ from sklearn.model_selection import StratifiedKFold
 ALPHAS = [1.0, 10.0, 100.0, 1e3, 3e3, 1e4, 3e4, 1e5, 3e5, 1e6]
 LP_KEYS = ["mean", "min", "max", "var", "first", "last"]
 POS_ORDER = ["PANL", "CC", "PANL+1", "FCC", "QTT", "AC"] + [f"INT{i}" for i in range(10)] + ["A_first", "A_last"]
+# positions that only exist in the two-turn format (VC_FMT=tt); the shared names come first, as above
+POS_ORDER += ["UNL", "SOT", "USER", "REQ0", "CC-1", "EOT2", "CC-3", "CC-2"]
 
 
 def zs(Xtr, Xte):
@@ -110,13 +112,17 @@ if __name__ == "__main__":
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--merge-only", action="store_true")
     ap.add_argument("--positions", default="")
+    ap.add_argument("--reverse", action="store_true", help="work through the task list from the end (for a second job)")
     args = ap.parse_args()
     parts = RESULTS / "probe" / "parts"
     os.makedirs(parts, exist_ok=True)
 
     trials = read_jsonl(DATA / "trials.jsonl")
     A = load_acts(in_memory=not args.merge_only)
-    T = [trials[i] for i in A.idx]
+    # the probes use the random collection sample only; extra low-confidence trials added to the collection
+    # set of the two-turn format (src == "train") would change the confidence distribution
+    KEEP = np.array([trials[i].get("src", "val") == "val" for i in A.idx])
+    T = [trials[i] for i, k in zip(A.idx, KEEP) if k]
     y_conf = np.array([t["conf"] for t in T], dtype=np.float64)
     y_corr = np.array([t["correct"] for t in T], dtype=int)
     LP = np.array([[t["lp"][k] for k in LP_KEYS] for t in T], dtype=np.float64)
@@ -137,7 +143,7 @@ if __name__ == "__main__":
         if f.exists():
             return
         t0 = time.time()
-        X = A.get(li, pos).astype(np.float64)
+        X = A.get(li, pos)[KEEP].astype(np.float64)
         F = []
         for tr, te in folds:
             Xtr, Xte = zs(X[tr], X[te])
@@ -166,6 +172,8 @@ if __name__ == "__main__":
         if args.positions:
             order = [p for p in args.positions.split(",")]
         tasks = [(li, p) for p in order for li in range(len(A.layers))]
+        if args.reverse:
+            tasks = tasks[::-1]
         t0 = time.time()
         Parallel(n_jobs=args.jobs, backend="multiprocessing")(delayed(task)(li, p) for li, p in tasks)
         print(f"all tasks done in {time.time()-t0:.0f}s", flush=True)

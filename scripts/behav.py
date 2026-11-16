@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from vc.data import alias_match, load_triviaqa, write_jsonl
 from vc.env import RESULTS
 from vc.model import VC, batched, log
-from vc.prompts import CLASSES, class_token_ids, digit_token_ids, encode, phase0_prompt
+from vc.prompts import CLASSES, class_token_ids, digit_token_ids, encode, judge_message, phase0_prompt
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--shard", type=int, default=0)
@@ -72,25 +72,11 @@ for bi, b in enumerate(batched(order, args.bs)):
 log(f"phase0 done in {time.time()-t0:.0f}s")
 
 # ------------------------------------------------------------------ judge
-JUDGE = (
-    "You are grading an answer to a trivia question.\n\n"
-    "Question: {q}\n"
-    "Accepted reference answers: {refs}\n"
-    "Submitted answer: {a}\n\n"
-    "Is the submitted answer correct, i.e. does it refer to the same thing as one of the accepted reference "
-    "answers? Ignore differences in capitalisation, spelling variants, abbreviation or extra detail. "
-    "Reply with a single word: Yes or No."
-)
 yes_id, no_id = tok("Yes", add_special_tokens=False).input_ids[0], tok("No", add_special_tokens=False).input_ids[0]
 
 
 def judge_ids(r):
-    refs, seen = [], set()
-    for a in [r["gold"]] + r["aliases"]:
-        if a.lower() not in seen:
-            seen.add(a.lower())
-            refs.append(a)
-    msg = JUDGE.format(q=r["question"], refs=" | ".join(refs[:12]), a=r["answer"])
+    msg = judge_message(r)
     text = tok.apply_chat_template([{"role": "user", "content": msg}], tokenize=False, add_generation_prompt=True)
     return tok(text, add_special_tokens=False).input_ids
 

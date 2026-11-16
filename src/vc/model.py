@@ -29,7 +29,7 @@ def log(*a):
 
 
 class VC:
-    def __init__(self, max_memory: dict | None = None, dtype=torch.bfloat16):
+    def __init__(self, max_memory: dict | None = None, dtype=torch.bfloat16, attn_implementation: str = "sdpa"):
         load_env()
         from transformers import AutoTokenizer, Gemma3ForConditionalGeneration
 
@@ -40,7 +40,7 @@ class VC:
             # leave head-room on both cards for cached activations
             max_memory = {0: "27GiB", 1: "40GiB"}
         self.model = Gemma3ForConditionalGeneration.from_pretrained(
-            MODEL_ID, dtype=dtype, device_map="auto", max_memory=max_memory, attn_implementation="sdpa"
+            MODEL_ID, dtype=dtype, device_map="auto", max_memory=max_memory, attn_implementation=attn_implementation
         )
         self.model.eval()
         self.lm = self.model.model.language_model

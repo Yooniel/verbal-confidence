@@ -19,6 +19,13 @@ for f in sorted(glob(str(RESULTS / "behav" / "shard*.jsonl"))):
     rows += read_jsonl(f)
 print(f"merged {len(rows)} rows")
 
+# Grader. The paper marks answers with GPT-4o-mini; scripts/grade_gpt.py stores its verdicts. Without that file
+# (or with GRADER=gemma) an answer counts as correct if it matches a TriviaQA alias or Gemma itself accepts it.
+GPT_FILE = RESULTS / "behav" / "gpt4omini.jsonl"
+GRADER = os.environ.get("GRADER", "gpt" if GPT_FILE.exists() else "gemma")
+gpt = {r["qid"]: r["verdict"] for r in read_jsonl(GPT_FILE)} if GPT_FILE.exists() else {}
+print(f"grader: {GRADER} ({len(gpt)} GPT-4o-mini verdicts on file)")
+
 MAX_ANS_TOK = 12
 # minimal 0-9 prompt variants run in behav.py: key -> (prompt kind, separator after the answer)
 MIN_VARIANTS = {"pm": ("min", "\n\n"), "pmq": ("minq", "\n\n"), "pm1": ("min", "\n"), "pmq1": ("minq", "\n")}
@@ -42,7 +49,9 @@ for r in valid:
     r["cls"] = int(np.argmax(r["p1_logits"]))
     r["conf"] = MIDPOINTS[r["cls"]]
     r["judge"] = r["judge_margin"] > 0
-    r["correct"] = bool(r["em"] or r["judge"])
+    r["correct_gemma"] = bool(r["em"] or r["judge"])  # alias match or Gemma-as-grader
+    r["gpt"] = gpt.get(r["qid"])  # GPT-4o-mini verdict: True / False / None (not graded or unparsed)
+    r["correct"] = bool(r["gpt"]) if GRADER == "gpt" and r["gpt"] is not None else r["correct_gemma"]
     p = np.exp(np.array(r["p1_logits"]) - np.max(r["p1_logits"]))
     r["conf_exp"] = float((p / p.sum()) @ np.array(MIDPOINTS))  # expected confidence, used only to break ties
     for k in MIN_VARIANTS:
@@ -105,6 +114,28 @@ summ = {
 p0 = np.array([MIDPOINTS[r["p0_conf"]] if r["p0_conf"] is not None else np.nan for r in valid])
 lpm = np.array([r["lp"]["mean"] for r in valid])
 ok = ~np.isnan(p0)
+cg = np.array([r["correct_gemma"] for r in valid])
+has_gpt = np.array([r["gpt"] is not None for r in valid])
+g = np.array([bool(r["gpt"]) for r in valid])
+summ["grader"] = GRADER
+summ["accuracy_gemma_or_alias"] = float(cg.mean())
+summ["gpt_graded"] = int(has_gpt.sum())
+if has_gpt.any():
+    summ["accuracy_gpt"] = float(g[has_gpt].mean())
+    summ["gpt_agrees_with_gemma_or_alias"] = float((g == cg)[has_gpt].mean())
+    summ["gpt_agrees_with_alias"] = float((g == em)[has_gpt].mean())
+    summ["gpt_true_alias_false"] = int((g & ~em & has_gpt).sum())
+    summ["gpt_false_alias_true"] = int((~g & em & has_gpt).sum())
+# Phase-0 confidence as a behavioural measure in its own right (what the paper's Fig. 9 resembles)
+p0c = np.array([r["p0_conf"] if r["p0_conf"] is not None else -1 for r in valid])
+summ["phase0"] = {
+    "ece": ece(np.round(p0[ok], 2), correct[ok]),
+    "auroc_verbal_conf": float(roc_auc_score(correct[ok], p0[ok])),
+    "class_counts": {CLASSES[c]: int((p0c == c).sum()) for c in range(10)},
+    "class_accuracy": {CLASSES[c]: (float(correct[p0c == c].mean()) if (p0c == c).any() else None) for c in range(10)},
+    "balanced_baseline": float((p0[ok & (p0c >= 7)].mean() + p0[ok & (p0c <= 2)].mean()) / 2),
+}
+summ["balanced_baseline"] = float((conf[hi].mean() + conf[lo].mean()) / 2)
 summ["n_p0_conf_valid"] = int(ok.sum())
 summ["r_p0conf_p1conf"] = float(np.corrcoef(p0[ok], conf[ok])[0, 1])
 summ["r_logprob_p0conf"] = float(np.corrcoef(lpm[ok], p0[ok])[0, 1])
@@ -154,12 +185,23 @@ sets["calib"] = pick(col & hi, 50) + pick(col & lo, 50)  # mean-ablation / corru
 sets["attn_cat"] = pick(test, 500)
 sets["attn_min"] = pick(test & dvalid, 500)
 sets["min_kind"], sets["min_panl"], sets["min_key"] = MIN_VARIANTS[MIN_KEY][0], MIN_VARIANTS[MIN_KEY][1], MIN_KEY
-# steering-vector trials: correct answers only, 25 highest / 25 lowest ranked by confidence (collection set)
+# steering-vector trials: correct answers only, 25 highest / 25 lowest ranked by confidence (collection set).
+# Many trials tie for those ranks (all "Almost certain" / "No chance"), and the paper does not say how ties are
+# broken. Main sets: ties broken at random (own seeded RNG, so the other sets do not depend on it); two more
+# random draws and the "most extreme trials first" tie-break (by expected confidence) are kept for comparison.
 cc = np.flatnonzero(col & correct)
 key = np.array([(valid[i]["conf"], valid[i]["conf_exp"]) for i in cc])
-o = np.lexsort((key[:, 1], key[:, 0]))
-sets["vec_low"] = [int(i) for i in cc[o[:25]]]
-sets["vec_high"] = [int(i) for i in cc[o[-25:]]]
+
+
+def vec_sets(tiebreak):
+    o = np.lexsort((tiebreak, key[:, 0]))
+    return [int(i) for i in cc[o[:25]]], [int(i) for i in cc[o[-25:]]]
+
+
+draws = [vec_sets(np.random.default_rng(100 + k).random(len(cc))) for k in range(3)]
+sets["vec_low"], sets["vec_high"] = draws[0]
+sets["vec_draws"] = [{"low": lo_, "high": hi_} for lo_, hi_ in draws]
+sets["vec_low_extreme"], sets["vec_high_extreme"] = vec_sets(key[:, 1])
 # patching robustness set: trials chosen by Phase-0 confidence, as the paper does (own RNG: other sets unchanged)
 p0_pool = [int(i) for i in np.flatnonzero(test) if valid[i]["p0_conf"] in (7, 8, 9)]
 sets["patch_p0"] = sorted(int(i) for i in np.random.default_rng(123).choice(p0_pool, 200, replace=False))

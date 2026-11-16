@@ -1,0 +1,271 @@
+{
+ "n": 600,
+ "A": {
+  "n": 600,
+  "same_answer_as_raw_pct": 80.16666666666666,
+  "answer_tokens_median": 3.0,
+  "answer_over_12_tokens_pct": 1.0,
+  "answer_ends_with_period_pct": 94.66666666666667,
+  "alias_accuracy_pct": 73.66666666666667,
+  "alias_accuracy_raw_pct": 72.83333333333334,
+  "proxy_accuracy_pct": 78.33333333333333,
+  "accuracy_raw_pct": 79.83333333333333,
+  "first_token_is_class_pct": 100.0,
+  "reply_parses_to_class_pct": 100.0,
+  "reply_class_equals_logit_class_pct": 98.83333333333333,
+  "reply_is_exactly_a_class_pct": 12.166666666666668,
+  "share_pct": [
+   0.2,
+   0.5,
+   0.3,
+   0.0,
+   0.0,
+   0.0,
+   0.2,
+   0.0,
+   19.3,
+   79.5
+  ],
+  "n_top3": 593,
+  "n_bottom3": 6,
+  "accuracy_by_class": {
+   "Highly likely": 0.491,
+   "Almost certain": 0.864
+  },
+  "auroc": 0.6905973813420623,
+  "ece": 0.14083333333333345,
+  "r_raw_phase1_conf": 0.36914244971298726,
+  "r_mean_logprob": 0.16865673979438142,
+  "auroc_mean_logprob": 0.6602536824877251,
+  "most_common_first_tokens": [
+   [
+    "Almost",
+    483
+   ],
+   [
+    "Highly",
+    110
+   ],
+   [
+    "Really",
+    3
+   ],
+   [
+    "Ch",
+    2
+   ],
+   [
+    "Lik",
+    1
+   ],
+   [
+    "No",
+    1
+   ]
+  ],
+  "example_turns": [
+   "Sparks.",
+   "Josiah Bartlet.",
+   "Yarrow.",
+   "Rollmops.",
+   "Morocco.",
+   "Sean Combs.",
+   "Phil Spector.",
+   "Cubism."
+  ],
+  "example_replies": [
+   "Almost certain.",
+   "Almost certain.",
+   "Almost certain.",
+   "Highly likely.",
+   "Almost certain.",
+   "Highly likely.",
+   "Almost certain.",
+   "Almost certain."
+  ],
+  "non_class_replies": []
+ },
+ "B": {
+  "n": 600,
+  "same_answer_as_raw_pct": 81.66666666666667,
+  "answer_tokens_median": 2.0,
+  "answer_over_12_tokens_pct": 0.33333333333333337,
+  "answer_ends_with_period_pct": 7.166666666666667,
+  "alias_accuracy_pct": 73.0,
+  "alias_accuracy_raw_pct": 72.83333333333334,
+  "proxy_accuracy_pct": 77.33333333333333,
+  "accuracy_raw_pct": 79.83333333333333,
+  "first_token_is_class_pct": 100.0,
+  "reply_parses_to_class_pct": 100.0,
+  "reply_class_equals_logit_class_pct": 87.5,
+  "reply_is_exactly_a_class_pct": 0.0,
+  "share_pct": [
+   0.0,
+   0.7,
+   0.2,
+   0.2,
+   0.0,
+   0.0,
+   1.8,
+   0.0,
+   24.0,
+   73.2
+  ],
+  "n_top3": 583,
+  "n_bottom3": 5,
+  "accuracy_by_class": {
+   "Likely": 0.182,
+   "Highly likely": 0.549,
+   "Almost certain": 0.868
+  },
+  "auroc": 0.7033468559837728,
+  "ece": 0.14316666666666672,
+  "r_raw_phase1_conf": 0.4287508797356726,
+  "r_mean_logprob": 0.057874727659655165,
+  "auroc_mean_logprob": 0.5746228448275863,
+  "most_common_first_tokens": [
+   [
+    " Almost",
+    443
+   ],
+   [
+    " Highly",
+    140
+   ],
+   [
+    " Likely",
+    11
+   ],
+   [
+    " Really",
+    4
+   ],
+   [
+    " Chances",
+    1
+   ],
+   [
+    " Un",
+    1
+   ]
+  ],
+  "example_turns": [
+   "Sparks\n**Answer**: Sparks",
+   "Josiah Bartlet\n\n**Answer**: Josiah Bartlet",
+   "Yarrow\n\n**Answer**: Yarrow",
+   "Rollmops\n\n**Answer**: Rollmops",
+   "Morocco\n\n**Answer**: Morocco",
+   "Sean Combs.\n**Answer**: Sean Combs",
+   "Phil Spector\n\n**Answer**: Phil Spector",
+   "Cubism\n\n**Answer**: Cubism"
+  ],
+  "example_replies": [
+   "Almost certain\n**Confidence**: Almost ce",
+   "Almost certain\n\n**Confidence**: Almost c",
+   "**Confidence**: Almost certain",
+   "Highly likely\n\n**Confidence**: Highly li",
+   "Highly likely\n\n**Confidence**: Highly li",
+   "Highly likely.\n**Confidence**: Highly li",
+   "Almost certain\n\n**Confidence**: Almost c",
+   "Almost certain\n\n**Confidence**: Almost c"
+  ],
+  "non_class_replies": []
+ },
+ "A2": {
+  "n": 600,
+  "same_answer_as_raw_pct": 80.16666666666666,
+  "answer_tokens_median": 3.0,
+  "answer_over_12_tokens_pct": 1.0,
+  "answer_ends_with_period_pct": 94.66666666666667,
+  "alias_accuracy_pct": 73.66666666666667,
+  "alias_accuracy_raw_pct": 72.83333333333334,
+  "proxy_accuracy_pct": 78.33333333333333,
+  "accuracy_raw_pct": 79.83333333333333,
+  "first_token_is_class_pct": 100.0,
+  "reply_parses_to_class_pct": 100.0,
+  "reply_class_equals_logit_class_pct": 81.83333333333334,
+  "reply_is_exactly_a_class_pct": 0.0,
+  "share_pct": [
+   0.2,
+   0.2,
+   0.2,
+   0.0,
+   0.0,
+   0.0,
+   0.7,
+   0.0,
+   20.0,
+   78.8
+  ],
+  "n_top3": 593,
+  "n_bottom3": 3,
+  "accuracy_by_class": {
+   "Highly likely": 0.483,
+   "Almost certain": 0.871
+  },
+  "auroc": 0.7070049099836334,
+  "ece": 0.14066666666666675,
+  "r_raw_phase1_conf": 0.3793510716168535,
+  "r_mean_logprob": 0.2050451119441617,
+  "auroc_mean_logprob": 0.6602536824877251,
+  "most_common_first_tokens": [
+   [
+    " Almost",
+    477
+   ],
+   [
+    " Highly",
+    116
+   ],
+   [
+    " Likely",
+    4
+   ],
+   [
+    " Chances",
+    1
+   ],
+   [
+    " No",
+    1
+   ],
+   [
+    " Really",
+    1
+   ]
+  ],
+  "example_turns": [
+   "Sparks.",
+   "Josiah Bartlet.",
+   "Yarrow.",
+   "Rollmops.",
+   "Morocco.",
+   "Sean Combs.",
+   "Phil Spector.",
+   "Cubism."
+  ],
+  "example_replies": [
+   "Almost certain\n\n**Confidence**: Almost c",
+   "Almost certain.\n\n**Confidence**: Almost ",
+   "Highly likely\n\n**Confidence**: Highly li",
+   "Highly likely\n\n**Confidence**: Highly li",
+   "Highly likely\n\n**Confidence**: Highly li",
+   "Highly likely\n\n**Confidence**: Highly li",
+   "Almost certain.\n\n**Confidence**: Almost ",
+   "Almost certain.\n\n**Confidence**: Almost "
+  ],
+  "non_class_replies": []
+ },
+ "raw_phase1_share_pct_same_trials": [
+  4.3,
+  5.3,
+  2.2,
+  0.3,
+  0.0,
+  0.0,
+  7.3,
+  0.0,
+  30.8,
+  49.7
+ ]
+}

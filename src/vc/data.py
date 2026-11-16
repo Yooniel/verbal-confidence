@@ -9,11 +9,13 @@ from pathlib import Path
 import numpy as np
 
 
-def load_triviaqa(seed: int = 0) -> list[dict]:
-    """De-duplicated TriviaQA (rc.nocontext, validation): 9,960 unique questions in a fixed shuffled order."""
+def load_triviaqa(seed: int = 0, split: str = "validation") -> list[dict]:
+    """De-duplicated TriviaQA (rc.nocontext): unique questions in a fixed shuffled order. The validation split
+    (9,960 unique questions) is the data set of all experiments; the train split is only used as a reservoir of
+    extra low-confidence trials for the two-turn format."""
     from datasets import load_dataset
 
-    ds = load_dataset("mandarjoshi/trivia_qa", "rc.nocontext", split="validation")
+    ds = load_dataset("mandarjoshi/trivia_qa", "rc.nocontext", split=split)
     seen, rows = set(), []
     for q, qid, ans in zip(ds["question"], ds["question_id"], ds["answer"]):
         if qid in seen:

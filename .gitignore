@@ -3,11 +3,13 @@ __pycache__/
 *.py[cod]
 .venv/
 
-# Collected activations (12.8 GB): regenerate with scripts/collect.py
+# Collected activations (12.8 GB per prompt format): regenerate with scripts/collect.py
 results/acts/
+results/tt/acts/
 
 # Per-task probe outputs, merged into results/probe/probe.json
 results/probe/parts/
+results/tt/probe/parts/
 
 # Scheduler logs
 logs/
@@ -15,3 +17,6 @@ logs/
 # Scratch
 *.tmp
 .DS_Store
+# activations captured for the interpretability extension (1.5 GB each; scripts/interp_capture.py)
+results/interp/capture.pt
+results/tt/interp/capture.pt

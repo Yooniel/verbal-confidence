@@ -1,0 +1,55 @@
+[  4] ||v||=52479.7 cos=0.993 fve=0.759
+AI/chatbot response pattern: a conversational or instructional query about a topic, likely a structured essay or listicle about programming or data.
+
+The opening question "How do you..." signals a request or query, likely a question about a topic or advice, possibly a comparison or example of a music/film.
+
+Final token "What" begins a question or prompt ("What"), strongly expecting a question or topic request, likely starting a new question or query about a topic. or "are the differences between..." or "is the best way to..." or "are some examples of..." or "role did the Beatles..." or "resources/advice should I use..." or "happened in."
+
+[  5] ||v||=53717.5 cos=0.995 fve=0.817
+AI/chatbot response pattern: a conversational or instructional query about a topic, likely a question or topic in a structured dataset.
+
+The phrase "What is" signals a question or request for a brief/informational answer, likely a technical or philosophical topic about a concept or product.
+
+Final token "What is" opens a question or prompt request ("What is..."), strongly expecting a noun phrase or topic question to follow, likely a specific topic or explanation of a programming/business concept. or "the difference between..." or "the metaverse?" or "a recommendation for..." or "the best way to calculate..." or "the Fibonacci sequence?" or "the role of a tensor in."
+
+[  6] ||v||=27797.1 cos=0.993 fve=0.762
+Structured argument/quote pattern: a persuasive, reflective essay building a vivid, experiential case for a sci-fi phenomenon.
+
+Repetition pattern: "It's a terrifying, awe-inspiring thing, and..." mirrors the earlier paragraph, continuing the emotional urgency about the mysterious, visual puzzle.
+
+Final token "again," closes a repeated phrase ("a dramatic event can happen,") requiring continuation with "the" or "it" to complete the repeated sentence, likely continuing with "the challenge" or "a unique design" or "the magic..." or "the phenomenon" or "of their location." or "their colours..." or "have a devastating impact." or "incredibly."
+
+[  7] ||v||=53435.1 cos=0.996 fve=0.877
+Educational/informational article format: a structured essay or listicle about a business or economic topic, likely a question about a country or city.
+
+The opening question "What is the capital" signals a formal answer or listicle, establishing a factual, encyclopedic response about a geographic or financial topic.
+
+Final token "What is the capital" begins a question format ("Which is the capital..."), immediately requiring a noun phrase like "city of France" or "capital of..." to specify the question about a capital city or investment. or "of Denmark?" or "of the United Kingdom?" or "of Italy?" or "capital of..." or "of the United States?" or."
+
+[  8] ||v||=45203.1 cos=0.995 fve=0.835
+Educational/informational article format: a structured FAQ or trivia answer about a geographic or political topic, likely a capital city.
+
+The question "What is the capital of" signals a question-answer format, strongly anticipating a specific answer about a country or state, likely a capital location or geographic fact.
+
+Final token "What is the capital of" opens a question beginning a factual query ("What is the capital of"), immediately requiring a noun phrase like "Australia," "Canada," or "New Zealand?" to specify the subject. or "South Sudan?" or "France?" or "the state of Montana?" or "Zimbabwe?" or "Peru?" or "Italy?" or "the."
+
+[  9] ||v||=53566.2 cos=0.998 fve=0.927
+Educational/informational article format: a structured answer or quiz about a country, likely a geography or travel topic.
+
+The opening question "What is the capital of France" signals a formal answer or topic introduction, establishing a factual, encyclopedic response about France's capital.
+
+Final token "France" opens a question ("What is the capital of France"), immediately requiring a question mark or noun phrase like "?" or "France?" to complete the question, likely followed by a structured answer or topic. or "France?" or "or France?" or "Paris?" or "and France?" or "or country?" or "Paris?" or "or capital?" or "and France."
+
+[ 10] ||v||=39504.7 cos=0.994 fve=0.809
+Educational/quiz format established: a question or prompt about a country, likely a factual geography or trivia question about France.
+
+The opening question "What is the capital of France and" signals a structured list or multi-question format, implying a brief factual answer about Paris or a country.
+
+Final token "What is the capital of France and" opens a question prompt ("What is the capital of France and"), immediately requiring a continuation like "its capital?" or "what is its name?" or "describe its location?" or "what city is it?" or "France?" or "what other interesting facts..." or "its capital?" or "what is its famous landmark?" or "."
+
+[ 11] ||v||=54199.4 cos=0.996 fve=0.846
+Educational/informational answer format: a structured response with a question or prompt about a country, likely a trivia or geography question.
+
+The phrase "What is the capital of France and what" signals a multi-question or request for information, implying a list or factual answer about Paris or its capital.
+
+Final token "what" opens a second question clause ("What is the capital of France and what"), requiring a noun phrase like "is it famous for?" or "are three things about it?" or "is its population?" or "famous landmark is there?" or "river does it border?" or "are some facts about it?" or "country/year does it lie?"

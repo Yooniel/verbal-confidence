@@ -1,0 +1,128 @@
+{
+ "n_total": 9960,
+ "n_valid": 9917,
+ "dropped": {
+  "answer longer than 12 tokens": 22,
+  "tokenisation round-trip": 21
+ },
+ "gpt_verdict_source": {
+  "main run": 7617,
+  "graded": 2300
+ },
+ "accuracy": 0.8015528889785217,
+ "accuracy_em_only": 0.7137239084400524,
+ "accuracy_gemma_or_alias": 0.8289805384692952,
+ "ece": 0.11564485227387321,
+ "auroc_verbal_conf": 0.7430517414370269,
+ "class_counts": {
+  "No chance": 1,
+  "Really unlikely": 78,
+  "Chances are slight": 4,
+  "Unlikely": 12,
+  "Less than even": 0,
+  "Better than even": 2,
+  "Likely": 85,
+  "Very good chance": 4,
+  "Highly likely": 2289,
+  "Almost certain": 7442
+ },
+ "class_accuracy": {
+  "No chance": 0.0,
+  "Really unlikely": 0.11538461538461539,
+  "Chances are slight": 0.75,
+  "Unlikely": 0.25,
+  "Less than even": null,
+  "Better than even": 0.0,
+  "Likely": 0.24705882352941178,
+  "Very good chance": 0.25,
+  "Highly likely": 0.5216251638269986,
+  "Almost certain": 0.902714324106423
+ },
+ "n_high": 9735,
+ "n_low": 83,
+ "n_low_test": 60,
+ "n_low_collect": 23,
+ "n_low_collect_correct": 6,
+ "mean_conf": 0.9167943934657659,
+ "balanced_baseline": 0.5400095915248049,
+ "r_logprob_conf": 0.24380449845906643,
+ "auroc_mean_logprob": 0.8352369833297024,
+ "answer_tokens_mean": 2.69617827972169,
+ "answer_single_token_pct": 17.374205909045074,
+ "prompt_tokens_mean": 278.24977311687,
+ "same_answer_as_main_run_pct": 76.85400060538795,
+ "n_same_answer": 7617,
+ "r_conf_main_phase1_same_answer": 0.5100624378741142,
+ "r_conf_main_phase0_same_answer": 0.6171870629083317,
+ "same_class_as_main_phase1_pct": 64.04096100827097,
+ "mean_conf_main_phase1_same_answer": 0.8488578180385977,
+ "mean_conf_two_turn_same_answer": 0.9294538532230534,
+ "reservoir": {
+  "n_questions": 24000,
+  "n_valid": 23904,
+  "dropped": {
+   "tokenisation round-trip": 37,
+   "answer longer than 12 tokens": 57,
+   "answer turn not finished within 40 tokens": 2
+  },
+  "class_counts": {
+   "No chance": 10,
+   "Really unlikely": 148,
+   "Chances are slight": 13,
+   "Unlikely": 24,
+   "Less than even": 0,
+   "Better than even": 4,
+   "Likely": 202,
+   "Very good chance": 2,
+   "Highly likely": 5532,
+   "Almost certain": 17969
+  },
+  "n_low": 171,
+  "low_pct": 0.7153614457831325,
+  "n_low_gpt_graded": 171,
+  "n_low_correct": 25
+ },
+ "vec_low_classes": {
+  "Really unlikely": 25
+ },
+ "vec_high_classes": {
+  "Almost certain": 25
+ },
+ "vec_low_from_reservoir": 21,
+ "set_sizes": {
+  "steer": 120,
+  "patch": 200,
+  "noise": 120,
+  "swap_high": 100,
+  "swap_low_pool": 60,
+  "swap_low": 60,
+  "calib": 100,
+  "attn_cat": 500,
+  "attn_win": 200,
+  "vec_low": 25,
+  "vec_high": 25
+ },
+ "set_from_reservoir": {
+  "steer": 0,
+  "patch": 0,
+  "noise": 0,
+  "swap_high": 0,
+  "swap_low_pool": 0,
+  "swap_low": 0,
+  "calib": 45,
+  "attn_cat": 0,
+  "attn_win": 0,
+  "vec_low": 21,
+  "vec_high": 0
+ },
+ "low_pool": {
+  "test": 60,
+  "collect": 194,
+  "collect_correct": 31,
+  "class_counts": {
+   "No chance": 11,
+   "Really unlikely": 226,
+   "Chances are slight": 17
+  }
+ }
+}

@@ -1,0 +1,599 @@
+{
+ "n_trials": 1000,
+ "paper_share_pct": [
+  1.5,
+  1.2,
+  3.3,
+  0.0,
+  0.0,
+  0.0,
+  3.9,
+  0.1,
+  20.8,
+  69.2
+ ],
+ "paper_accuracy_by_class": {
+  "No chance": 0.17,
+  "Really unlikely": 0.21,
+  "Chances are slight": 0.26,
+  "Likely": 0.375,
+  "Highly likely": 0.63,
+  "Almost certain": 0.855
+ },
+ "paper_balanced_baseline": 0.553,
+ "variants": {
+  "raw_nn": {
+   "n": 1000,
+   "share_pct": [
+    5.1,
+    5.2,
+    1.5,
+    0.2,
+    0.0,
+    0.0,
+    7.3,
+    0.0,
+    32.6,
+    48.1
+   ],
+   "tv_distance_to_paper": 0.23001170781369307,
+   "accuracy_by_class": {
+    "No chance": 0.27450980392156865,
+    "Really unlikely": 0.40384615384615385,
+    "Chances are slight": 0.06666666666666667,
+    "Likely": 0.5205479452054794,
+    "Highly likely": 0.8128834355828221,
+    "Almost certain": 0.9542619542619543
+   },
+   "accuracy_by_class_alias_only": {
+    "No chance": 0.2549019607843137,
+    "Really unlikely": 0.36538461538461536,
+    "Chances are slight": 0.06666666666666667,
+    "Likely": 0.4520547945205479,
+    "Highly likely": 0.745398773006135,
+    "Almost certain": 0.8814968814968815
+   },
+   "auroc": 0.8213033705066656,
+   "ece": 0.05130000000000001,
+   "balanced_baseline": 0.5145474975321865,
+   "r_phase0_conf": 0.5968108128550682,
+   "r_mean_logprob": 0.3912908071043397,
+   "median_top2_margin": 1.6576499999999967,
+   "mean_logit_diff_top3": 14.760772945064025,
+   "first_token_is_class_pct": 100.0,
+   "class_tokens_read": "leading space",
+   "most_common_first_tokens": [
+    [
+     " Almost",
+     486
+    ],
+    [
+     " Highly",
+     323
+    ],
+    [
+     " Likely",
+     69
+    ],
+    [
+     " Really",
+     53
+    ],
+    [
+     " No",
+     52
+    ],
+    [
+     " Chances",
+     14
+    ]
+   ]
+  },
+  "raw_nnn": {
+   "n": 1000,
+   "share_pct": [
+    4.9,
+    6.4,
+    1.4,
+    0.4,
+    0.0,
+    0.0,
+    7.2,
+    0.0,
+    34.0,
+    45.7
+   ],
+   "tv_distance_to_paper": 0.2550117078136931,
+   "accuracy_by_class": {
+    "No chance": 0.2857142857142857,
+    "Really unlikely": 0.390625,
+    "Likely": 0.5555555555555556,
+    "Highly likely": 0.8205882352941176,
+    "Almost certain": 0.9562363238512035
+   },
+   "accuracy_by_class_alias_only": {
+    "No chance": 0.2653061224489796,
+    "Really unlikely": 0.359375,
+    "Likely": 0.4861111111111111,
+    "Highly likely": 0.75,
+    "Almost certain": 0.8840262582056893
+   },
+   "auroc": 0.8191707295811307,
+   "ece": 0.04870000000000001,
+   "balanced_baseline": 0.5148904849879963,
+   "r_phase0_conf": 0.5781793325173026,
+   "r_mean_logprob": 0.37738891297962307,
+   "median_top2_margin": 1.7416000000000018,
+   "mean_logit_diff_top3": 15.00166817231284,
+   "first_token_is_class_pct": 100.0,
+   "class_tokens_read": "leading space",
+   "most_common_first_tokens": [
+    [
+     " Almost",
+     462
+    ],
+    [
+     " Highly",
+     339
+    ],
+    [
+     " Likely",
+     68
+    ],
+    [
+     " Really",
+     61
+    ],
+    [
+     " No",
+     52
+    ],
+    [
+     " Chances",
+     12
+    ]
+   ]
+  },
+  "raw_n": {
+   "n": 1000,
+   "share_pct": [
+    3.9,
+    4.4,
+    2.1,
+    0.5,
+    0.0,
+    0.0,
+    8.0,
+    0.0,
+    30.2,
+    50.9
+   ],
+   "tv_distance_to_paper": 0.19601170781369304,
+   "accuracy_by_class": {
+    "No chance": 0.23076923076923078,
+    "Really unlikely": 0.36363636363636365,
+    "Chances are slight": 0.38095238095238093,
+    "Likely": 0.5375,
+    "Highly likely": 0.7814569536423841,
+    "Almost certain": 0.9508840864440079
+   },
+   "accuracy_by_class_alias_only": {
+    "No chance": 0.20512820512820512,
+    "Really unlikely": 0.3181818181818182,
+    "Chances are slight": 0.3333333333333333,
+    "Likely": 0.475,
+    "Highly likely": 0.7119205298013245,
+    "Almost certain": 0.8821218074656189
+   },
+   "auroc": 0.8125050591846774,
+   "ece": 0.050600000000000034,
+   "balanced_baseline": 0.5227271649435644,
+   "r_phase0_conf": 0.6267388581506076,
+   "r_mean_logprob": 0.38862012242996014,
+   "median_top2_margin": 1.696399999999997,
+   "mean_logit_diff_top3": 14.635991464584189,
+   "first_token_is_class_pct": 100.0,
+   "class_tokens_read": "leading space",
+   "most_common_first_tokens": [
+    [
+     " Almost",
+     526
+    ],
+    [
+     " Highly",
+     289
+    ],
+    [
+     " Likely",
+     76
+    ],
+    [
+     " Really",
+     44
+    ],
+    [
+     " No",
+     40
+    ],
+    [
+     " Chances",
+     17
+    ]
+   ]
+  },
+  "raw_nobos": {
+   "n": 1000,
+   "share_pct": [
+    0.1,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.1,
+    12.3,
+    0.0,
+    87.5,
+    0.0
+   ],
+   "tv_distance_to_paper": 0.7526268770679563,
+   "accuracy_by_class": {
+    "Likely": 0.7317073170731707,
+    "Highly likely": 0.8091428571428572
+   },
+   "accuracy_by_class_alias_only": {
+    "Likely": 0.6260162601626016,
+    "Highly likely": 0.7497142857142857
+   },
+   "auroc": 0.5278115056756268,
+   "ece": 0.04630000000000004,
+   "balanced_baseline": 0.4499999999999999,
+   "r_phase0_conf": 0.019394944328808714,
+   "r_mean_logprob": 0.10814964185476791,
+   "median_top2_margin": 0.9214000000000002,
+   "mean_logit_diff_top3": 5.2680323301587295,
+   "first_token_is_class_pct": 2.4,
+   "class_tokens_read": "leading space",
+   "most_common_first_tokens": [
+    [
+     " $",
+     975
+    ],
+    [
+     " Highly",
+     23
+    ],
+    [
+     " Likely",
+     1
+    ],
+    [
+     " Kobe",
+     1
+    ]
+   ]
+  },
+  "chat_open": {
+   "n": 1000,
+   "share_pct": [
+    8.2,
+    2.5,
+    2.7,
+    0.1,
+    0.0,
+    0.0,
+    4.4,
+    0.0,
+    22.9,
+    59.2
+   ],
+   "tv_distance_to_paper": 0.10701170781369308,
+   "accuracy_by_class": {
+    "No chance": 0.32926829268292684,
+    "Really unlikely": 0.4,
+    "Chances are slight": 0.3333333333333333,
+    "Likely": 0.4772727272727273,
+    "Highly likely": 0.777292576419214,
+    "Almost certain": 0.9358108108108109
+   },
+   "accuracy_by_class_alias_only": {
+    "No chance": 0.2926829268292683,
+    "Really unlikely": 0.36,
+    "Chances are slight": 0.2962962962962963,
+    "Likely": 0.38636363636363635,
+    "Highly likely": 0.7117903930131004,
+    "Almost certain": 0.8665540540540541
+   },
+   "auroc": 0.8063063904507499,
+   "ece": 0.06440000000000004,
+   "balanced_baseline": 0.5155312051193485,
+   "r_phase0_conf": 0.578975921367351,
+   "r_mean_logprob": 0.3860579032231921,
+   "median_top2_margin": 2.059850000000001,
+   "mean_logit_diff_top3": 15.038763364460683,
+   "first_token_is_class_pct": 100.0,
+   "class_tokens_read": "leading space",
+   "most_common_first_tokens": [
+    [
+     " Almost",
+     600
+    ],
+    [
+     " Highly",
+     221
+    ],
+    [
+     " No",
+     87
+    ],
+    [
+     " Likely",
+     43
+    ],
+    [
+     " Chances",
+     25
+    ],
+    [
+     " Really",
+     23
+    ]
+   ]
+  },
+  "chat_prefill_full": {
+   "n": 1000,
+   "share_pct": [
+    7.2,
+    3.6,
+    0.8,
+    0.6,
+    0.1,
+    0.0,
+    3.1,
+    0.0,
+    20.5,
+    64.1
+   ],
+   "tv_distance_to_paper": 0.08725757190124714,
+   "accuracy_by_class": {
+    "No chance": 0.3472222222222222,
+    "Really unlikely": 0.4166666666666667,
+    "Likely": 0.45161290322580644,
+    "Highly likely": 0.6926829268292682,
+    "Almost certain": 0.9375975039001561
+   },
+   "accuracy_by_class_alias_only": {
+    "No chance": 0.3194444444444444,
+    "Really unlikely": 0.3888888888888889,
+    "Likely": 0.3870967741935484,
+    "Highly likely": 0.6146341463414634,
+    "Almost certain": 0.8705148205928237
+   },
+   "auroc": 0.8096501223544356,
+   "ece": 0.07990000000000005,
+   "balanced_baseline": 0.5102979538599495,
+   "r_phase0_conf": 0.5980630630022362,
+   "r_mean_logprob": 0.38964598186828486,
+   "median_top2_margin": 7.84845,
+   "mean_logit_diff_top3": 36.005558930916735,
+   "first_token_is_class_pct": 100.0,
+   "class_tokens_read": "leading space",
+   "most_common_first_tokens": [
+    [
+     " Almost",
+     649
+    ],
+    [
+     " Highly",
+     198
+    ],
+    [
+     " No",
+     73
+    ],
+    [
+     " Really",
+     35
+    ],
+    [
+     " Likely",
+     30
+    ],
+    [
+     " Chances",
+     8
+    ]
+   ]
+  },
+  "chat_prefill_split": {
+   "n": 1000,
+   "share_pct": [
+    7.2,
+    4.3,
+    0.5,
+    1.3,
+    0.0,
+    0.0,
+    4.7,
+    0.0,
+    25.2,
+    56.8
+   ],
+   "tv_distance_to_paper": 0.15301170781369308,
+   "accuracy_by_class": {
+    "No chance": 0.3611111111111111,
+    "Really unlikely": 0.4186046511627907,
+    "Likely": 0.5106382978723404,
+    "Highly likely": 0.7420634920634921,
+    "Almost certain": 0.9507042253521126
+   },
+   "accuracy_by_class_alias_only": {
+    "No chance": 0.3194444444444444,
+    "Really unlikely": 0.3953488372093023,
+    "Likely": 0.425531914893617,
+    "Highly likely": 0.6587301587301587,
+    "Almost certain": 0.8890845070422535
+   },
+   "auroc": 0.8190742159042086,
+   "ece": 0.06989999999999998,
+   "balanced_baseline": 0.5067174796747966,
+   "r_phase0_conf": 0.5864011126163732,
+   "r_mean_logprob": 0.37981661560104646,
+   "median_top2_margin": 6.691200000000002,
+   "mean_logit_diff_top3": 36.29227593495935,
+   "first_token_is_class_pct": 100.0,
+   "class_tokens_read": "leading space",
+   "most_common_first_tokens": [
+    [
+     " Almost",
+     571
+    ],
+    [
+     " Highly",
+     249
+    ],
+    [
+     " No",
+     72
+    ],
+    [
+     " Likely",
+     46
+    ],
+    [
+     " Really",
+     43
+    ],
+    [
+     " Un",
+     13
+    ]
+   ]
+  },
+  "chat_user": {
+   "n": 1000,
+   "share_pct": [
+    5.7,
+    6.8,
+    0.5,
+    1.1,
+    0.1,
+    0.2,
+    2.5,
+    0.0,
+    37.3,
+    45.8
+   ],
+   "tv_distance_to_paper": 0.2765711376940697,
+   "accuracy_by_class": {
+    "No chance": 0.3333333333333333,
+    "Really unlikely": 0.4264705882352941,
+    "Likely": 0.48,
+    "Highly likely": 0.7801608579088471,
+    "Almost certain": 0.9650655021834061
+   },
+   "accuracy_by_class_alias_only": {
+    "No chance": 0.2982456140350877,
+    "Really unlikely": 0.39705882352941174,
+    "Likely": 0.4,
+    "Highly likely": 0.6997319034852547,
+    "Almost certain": 0.9061135371179039
+   },
+   "auroc": 0.8151887620719931,
+   "ece": 0.07490000000000002,
+   "balanced_baseline": 0.5075571600481347,
+   "r_phase0_conf": 0.5719617210703702,
+   "r_mean_logprob": 0.3864124995042814,
+   "median_top2_margin": 4.8530000000000015,
+   "mean_logit_diff_top3": 31.880076280251373,
+   "first_token_is_class_pct": 100.0,
+   "class_tokens_read": "no leading space",
+   "most_common_first_tokens": [
+    [
+     "Almost",
+     471
+    ],
+    [
+     "Highly",
+     355
+    ],
+    [
+     "Really",
+     66
+    ],
+    [
+     "No",
+     59
+    ],
+    [
+     "Lik",
+     29
+    ],
+    [
+     "Un",
+     12
+    ]
+   ]
+  }
+ },
+ "p0chat": {
+  "n": 400,
+  "parsed_pct": 99.25,
+  "alias_accuracy_chat_pct": 72.5,
+  "alias_accuracy_raw_pct_same_questions": 74.5,
+  "same_answer_as_raw_pct": 76.0,
+  "phase0_conf_share_pct": [
+   0.0,
+   0.3,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.8,
+   0.0,
+   22.1,
+   76.9
+  ],
+  "examples": [
+   "F\u00fcr Elise.\n\n**Answer**: F\u00fcr Elise\n**Confidence**: Almost certain",
+   "Sugar Baby Love\n\n**Answer**: Sugar Baby Love\n**Confidence**: Almost certain",
+   "Geometry.\n**Answer**: Geometry\n**Confidence**: Almost certain",
+   "Rollmops.\n**Answer**: Rollmops\n**Confidence**: Almost certain",
+   "Morocco\n\n**Answer**: Morocco\n**Confidence**: Almost certain",
+   "Bayern Munich\n\n**Answer**: Bayern Munich\n**Confidence**: Almost certain"
+  ],
+  "phase1": {
+   "raw_nn": {
+    "n": 397,
+    "share_pct": [
+     4.5,
+     6.0,
+     2.0,
+     0.3,
+     0.0,
+     0.0,
+     5.5,
+     0.0,
+     35.8,
+     45.8
+    ],
+    "tv_distance_to_paper": 0.24742228715878123
+   },
+   "chat_prefill_split": {
+    "n": 397,
+    "share_pct": [
+     6.5,
+     7.1,
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     4.0,
+     0.0,
+     22.7,
+     58.7
+    ],
+    "tv_distance_to_paper": 0.13910994458951173
+   }
+  }
+ }
+}

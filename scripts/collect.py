@@ -11,11 +11,15 @@ import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from vc.data import SWEEP_LAYERS, read_jsonl
-from vc.env import DATA, RESULTS
+from vc.env import DATA, FMT, RESULTS
 from vc.model import VC, batched, log
-from vc.prompts import class_token_ids, encode
+from vc.prompts import class_token_ids, encode_trial
 
-POS_NAMES = ["PANL", "PANL+1", "CC", "FCC", "AC", "A_first", "A_last", "QTT"] + [f"INT{i}" for i in range(10)]
+if FMT == "tt":  # two-turn format: the tokens after the answer, around the request, and the same controls
+    POS_NAMES = ["PANL", "PANL+1", "SOT", "USER", "UNL", "REQ0", "INT0", "INT4", "INT9", "EOT2", "CC-3", "CC-2", "CC-1", "CC",
+                 "AC", "A_first", "A_last", "QTT"]
+else:
+    POS_NAMES = ["PANL", "PANL+1", "CC", "FCC", "AC", "A_first", "A_last", "QTT"] + [f"INT{i}" for i in range(10)]
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--shard", type=int, default=0)
@@ -29,8 +33,11 @@ trials = trials[args.shard :: args.nshards]
 vc = VC()
 tok = vc.tok
 cls_ids = class_token_ids(tok)
-encs = [encode(tok, r["question"], r["answer"], "cat") for r in trials]
-P = np.array([[e.pos[k] for k in POS_NAMES[:8]] + e.inter for e in encs])  # [n, 18]
+encs = [encode_trial(tok, r) for r in trials]
+if FMT == "tt":
+    P = np.array([[e.pos[k] for k in POS_NAMES] for e in encs])  # [n, 18]
+else:
+    P = np.array([[e.pos[k] for k in POS_NAMES[:8]] + e.inter for e in encs])  # [n, 18]
 acts = np.zeros((len(trials), len(SWEEP_LAYERS), len(POS_NAMES), vc.d), dtype=np.float32)
 logits = np.zeros((len(trials), 10), dtype=np.float32)
 order = sorted(range(len(trials)), key=lambda i: encs[i].n)

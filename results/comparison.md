@@ -1,38 +1,40 @@
 | Experiment | Quantity | Paper | This replication |
 |---|---|---|---|
 | Behaviour | valid trials | 7,858 | 9,944 |
-| Behaviour | accuracy | 77.4% (GPT-4o-mini grader) | 81.8% (alias match or Gemma grader); 73.1% alias match only |
-| Behaviour | ECE (categorical prompt) | 0.12 | 0.05 |
-| Behaviour | AUROC of verbal confidence | 0.71 | 0.82 |
-| Behaviour | share 'Almost certain' / 'Highly likely' | 69% / 21% | 49% / 32% |
-| Behaviour | share of bottom-3 classes | 6.0% | 11.5% |
-| Behaviour | Phase-0 confidence (same generation as the answer): ECE / AUROC / share 'Almost certain' / 'Highly likely' | (Fig. 9 values: 0.12 / 0.71 / 69% / 21%) | 0.09 / 0.72 / 76% / 19% |
-| Behaviour | AUROC of mean answer log-prob | 0.75 | 0.80 |
+| Behaviour | accuracy | 77.4% (GPT-4o-mini grader) | 79.6% (GPT-4o-mini via OpenRouter); 73.1% alias match only; 81.8% alias match or Gemma grader |
+| Behaviour | Phase-0 confidence (stated with the answer): ECE / AUROC | 0.12 / 0.71 (Fig. 9) | 0.11 / 0.72 |
+| Behaviour | Phase-0 confidence: share 'Almost certain' / 'Highly likely' / bottom-3 classes | 69% / 21% / 6.0% (Fig. 9) | 76% / 19% / 2.3% |
+| Behaviour | Phase-0 confidence: accuracy of 'Almost certain' / 'Highly likely' / 'Likely' answers | ≈ 0.86 / 0.63 / 0.38 (Fig. 9) | 0.88 / 0.57 / 0.34 |
+| Behaviour | Phase-1 confidence (answer fed back; used by all experiments): ECE / AUROC | not reported separately | 0.06 / 0.81 |
+| Behaviour | Phase-1 confidence: share 'Almost certain' / 'Highly likely' / bottom-3 classes | not reported separately | 49% / 32% / 11.5% |
+| Behaviour | Phase-1 confidence: accuracy of 'Almost certain' / 'Highly likely' / 'Likely' answers | not reported separately | 0.95 / 0.78 / 0.52 |
+| Behaviour | balanced baseline (mean of top-3 and bottom-3 class means): Phase 0 / Phase 1 | 0.55 (steering baseline, Fig. 2) | 0.55 / 0.52 |
+| Behaviour | AUROC of mean answer log-prob | 0.75 | 0.81 |
 | Behaviour | r(log-prob, phase-1 confidence) | 0.29 | 0.33 |
 | Behaviour | r(log-prob, phase-0 confidence) | 0.23 | 0.26 |
 | Behaviour | r(phase-0 conf, phase-1 conf) | 0.63 | 0.59 |
-| Behaviour | minimal 0-9 prompt: ECE / AUROC | 0.17 / 0.68 | 0.12 / 0.55 (first token is a digit in 100% of trials) |
+| Behaviour | minimal 0-9 prompt: ECE / AUROC | 0.17 / 0.68 | 0.15 / 0.55 (first token is a digit in 100% of trials) |
 | Steering | baseline confidence of test trials | 0.55 | 0.52 |
-| Steering | PANL, scale 5: peak Δconf, high vector | ≈ +0.17 @ L24–26 (peak range L21–25) | 0.261 @ L24 |
-| Steering | PANL, scale 5: peak Δconf, low vector | ≈ −0.22 @ L24 | -0.460 @ L22 |
-| Steering | CC, scale 5: peak Δconf, high vector | ≈ +0.46 @ L30–34 (peak range L30–35) | 0.434 @ L32 |
-| Steering | CC, scale 5: peak Δconf, low vector | ≈ −0.42 @ L30 | -0.456 @ L50 |
-| Steering | PANL, scale 2: peak Δconf high / low | ≈ +0.16 / −0.09 | 0.215 @ L22 / -0.106 @ L23 |
-| Steering | CC, scale 2: peak Δconf high / low | ≈ +0.42 / −0.11 | 0.411 @ L30 / -0.071 @ L34 |
-| Steering | PANL+1, scale 5: largest absolute Δconf over all layers and both vectors | below 0.01 in absolute value | 0.007 |
-| Steering | FCC, scale 5: largest absolute Δconf over all layers and both vectors | below 0.01 in absolute value | 0.014 |
-| Steering | AC, scale 5: largest absolute Δconf over all layers and both vectors | about 0.03 or less, not significant | 0.046 |
-| Steering | last answer token, scale 5: peak Δconf high / low | effective (≈ +0.33 / −0.35) | 0.373 @ L24 / -0.392 @ L23 |
-| Steering | first answer token, scale 5, multi-token answers only (n=147): peak Δconf high / low | ineffective | 0.102 @ L21 / -0.060 @ L21 (last answer token on the same trials: 0.394 @ L24 / -0.340 @ L22) |
-| Patching | clean logit diff / corrupted logit diff | ≈ 11.9 / ≈ −0.5 | 14.77 / -0.53 |
-| Patching | corrupted run: confidence / token change | ≈ 0.05 / 100% | 0.05 / 100% |
-| Patching | PANL: peak confidence after patch | ≈ 0.38 @ L25 | 0.13 @ L22 |
-| Patching | PANL: peak confidence recovery | ≈ 40% @ L25 | 9.2% @ L22 |
-| Patching | PANL: peak logit-diff recovery | ≈ 20% @ L25 | 10.4% @ L22 |
-| Patching | PANL: recovery of the margin (clean class − corrupted-run class), supplementary | not reported | 20.3% @ L22 (margin -14.1 → -7.7; clean 17.2) |
-| Patching | PANL: token change rate at best layer | ≈ 78% @ L25 | 96% @ L25 |
-| Patching | PANL+1: peak confidence recovery | ≈ 0% (−1.4% @ L25) | 0.0% @ L0 |
-| Patching | CC: confidence recovery @ L35 / L40 / L61 | ≈ 22% / ≈ 95% / 100% (rises after L30) | 39% / 98% / 100% |
+| Steering | PANL, scale 5: peak Δconf, high vector | ≈ +0.18 @ L25–26 (peak range L21–26) | 0.314 @ L22 |
+| Steering | PANL, scale 5: peak Δconf, low vector | ≈ −0.22 @ L24 | -0.244 @ L23 |
+| Steering | CC, scale 5: peak Δconf, high vector | ≈ +0.46 @ L30–34 (peak range L30–35) | 0.429 @ L30 |
+| Steering | CC, scale 5: peak Δconf, low vector | ≈ −0.42 @ L30 | -0.441 @ L35 |
+| Steering | PANL, scale 2: peak Δconf high / low | ≈ +0.16 / −0.09 | 0.298 @ L24 / -0.143 @ L24 |
+| Steering | CC, scale 2: peak Δconf high / low | ≈ +0.42 / −0.11 | 0.390 @ L31 / -0.066 @ L30 |
+| Steering | PANL+1, scale 5: largest absolute Δconf over all layers and both vectors | below 0.01 in absolute value | 0.010 |
+| Steering | FCC, scale 5: largest absolute Δconf over all layers and both vectors | below 0.01 in absolute value | 0.023 |
+| Steering | AC, scale 5: largest absolute Δconf over all layers and both vectors | about 0.03 or less, not significant | 0.082 |
+| Steering | last answer token, scale 5: peak Δconf high / low | effective (≈ +0.33 / −0.35) | 0.324 @ L21 / -0.395 @ L24 |
+| Steering | first answer token, scale 5, multi-token answers only (n=147): peak Δconf high / low | ineffective | 0.035 @ L20 / -0.148 @ L25 (last answer token on the same trials: 0.345 @ L21 / -0.346 @ L24) |
+| Patching | clean logit diff / corrupted logit diff | ≈ 11.9 / ≈ −0.5 | 13.21 / -0.64 |
+| Patching | corrupted run: confidence / token change | ≈ 0.05 / 100% | 0.05 / 96% |
+| Patching | PANL: peak confidence after patch | ≈ 0.38 @ L25 | 0.24 @ L25 |
+| Patching | PANL: peak confidence recovery | ≈ 40% @ L25 | 24.4% @ L25 |
+| Patching | PANL: peak logit-diff recovery | ≈ 20% @ L25 | 13.2% @ L25 |
+| Patching | PANL: recovery of the margin (clean class − corrupted-run class), supplementary | not reported | 30.4% @ L25 (margin -14.2 → -5.2; clean 15.5) |
+| Patching | PANL: token change rate at best layer | ≈ 78% @ L25 | 82% @ L25 |
+| Patching | PANL+1: peak confidence recovery | ≈ 0% (−1.4% @ L25) | 0.1% @ L10 |
+| Patching | CC: confidence recovery @ L35 / L40 / L61 | ≈ 22% / ≈ 95% / 100% (rises after L30) | 38% / 100% / 100% |
 | Patching | CC: confidence recovery @ L25 / L30 | ≈ 0% / ≈ 0% | 0% / 0% |
 | Noising | clean logit diff | ≈ 9.4 | 10.76 |
 | Noising | PANL: peak token change rate | ≈ 14% @ L25 | 18.5% @ L25 |
@@ -55,16 +57,16 @@
 | Swap (PANL) | low->low: largest logit-diff change | ≈ −0.2 | -0.24 @ L25 |
 | Swap (PANL+1) | cross-confidence peak confidence change (L→H / H→L) | ≈ 0 (no effect) | 0.006 @ L40 / -0.000 @ L0 |
 | Swap (CC) | cross-confidence peak confidence change (L→H / H→L) | ≈ +0.68 / −0.65 @ L40–61 (onset after L31) | 0.786 @ L40 / -0.789 @ L61 |
-| Decoding | R²_CV of log-prob baselines: mean / min / first / var / last / max / all six | 0.084 / 0.101 / 0.070 / 0.051 / 0.039 / 0.025 / 0.100 | 0.094 / 0.096 / 0.084 / 0.035 / 0.051 / 0.042 / 0.095 |
-| Decoding | AUROC: verbal confidence / mean log-prob (collection set) | 0.71 / 0.75 | 0.82 / 0.78 |
-| Decoding | correctness AUROC from PANL @ L20 / L28 / peak | ≈ 0.75 / ≈ 0.83 / ≈ 0.84 | 0.78 / 0.84 / 0.85 @ L40 |
-| Decoding | correctness AUROC from CC @ L20 / L28 / peak | ≈ 0.71 / ≈ 0.81 / ≈ 0.84 | 0.73 / 0.83 / 0.85 @ L50 |
-| Decoding | correctness AUROC from QTT (control), peak | ≈ 0.57 | 0.57 @ L28 |
-| Decoding | confidence R² (ridge α=1) from PANL: first layer > 0.05 / peak | L25 / ≈ 0.48 @ L40 | L25 / 0.54 @ L50 |
+| Decoding | R²_CV of log-prob baselines: mean / min / first / var / last / max / all six | 0.084 / 0.101 / 0.070 / 0.051 / 0.039 / 0.025 / 0.100 | 0.096 / 0.098 / 0.086 / 0.039 / 0.053 / 0.044 / 0.099 |
+| Decoding | AUROC: verbal confidence / mean log-prob (collection set) | 0.71 / 0.75 | 0.80 / 0.80 |
+| Decoding | correctness AUROC from PANL @ L20 / L28 / peak | ≈ 0.75 / ≈ 0.83 / ≈ 0.84 | 0.74 / 0.82 / 0.83 @ L35 |
+| Decoding | correctness AUROC from CC @ L20 / L28 / peak | ≈ 0.71 / ≈ 0.81 / ≈ 0.84 | 0.70 / 0.81 / 0.82 @ L50 |
+| Decoding | correctness AUROC from QTT (control), peak | ≈ 0.57 | 0.56 @ L28 |
+| Decoding | confidence R² (ridge α=1) from PANL: first layer > 0.05 / peak | L25 / ≈ 0.48 @ L40 | L25 / 0.56 @ L50 |
 | Decoding | confidence R² (ridge α=1) from CC: first layer > 0.05 / peak | L28 / ≈ 0.84 @ L50 | L28 / 0.88 @ L50 |
-| Decoding | R² unique to PANL beyond all six log-prob baselines, peak | 0.38 @ L40 | 0.44 @ L50 |
-| Decoding | R² unique to CC beyond all six log-prob baselines, peak | ≈ 0.76 @ L50 (vs mean log-prob) | 0.79 @ L50 |
-| Decoding | confidence R² (tuned ridge): AC / PANL / PANL+1, peak | ≈ 0.2 / ≈ 0.75 / ≈ 0.70 | 0.19 @ L35 / 0.78 @ L35 / 0.74 @ L40 |
+| Decoding | R² unique to PANL beyond all six log-prob baselines, peak | 0.38 @ L40 | 0.46 @ L50 |
+| Decoding | R² unique to CC beyond all six log-prob baselines, peak | ≈ 0.76 @ L50 (vs mean log-prob) | 0.78 @ L50 |
+| Decoding | confidence R² (tuned ridge): AC / PANL / PANL+1, peak | ≈ 0.2 / ≈ 0.75 / ≈ 0.70 | 0.19 @ L35 / 0.78 @ L35 / 0.75 @ L40 |
 | Attention blocking (minimal prompt; prompt ends  **:'  (digit is the next token), separator \n\n) | baseline: clean logit diff / control-path noise floor | n/a | 8.66 / 0.5% token change |
 | Attention blocking (minimal prompt; prompt ends  **:'  (digit is the next token), separator \n\n) | CC→PANL: peak token change | ≈ 21% @ windows centred L30–36 | 5.8% @ L30 |
 | Attention blocking (minimal prompt; prompt ends  **:'  (digit is the next token), separator \n\n) | CC→PANL: largest logit-diff change | ≈ −0.8 @ L34 | -1.91 @ L30 |
@@ -106,16 +108,16 @@
 | Attention blocking (categorical, all layers) | ALL→NL+A: token change / Δ logit diff | ≈ 59% | 59.6% / -8.26 |
 | Attention blocking (categorical, all layers) | ALL→A_keepNL: token change / Δ logit diff | ≈ 51% | 30.8% / -2.97 |
 | OOD check, layer 25, PANL (Table 1) | natural pairwise cosine [p5, p95] / norm ratio [p5, p95] | [0.998, 1.000] / [0.90, 1.10] | [0.997, 1.000] / [0.90, 1.11] |
-| OOD check, layer 25, PANL (Table 1) | steering, high vector, scale 2: cosine / norm ratio | 0.999 / 0.96 | 0.999 / 0.96 |
-| OOD check, layer 25, PANL (Table 1) | steering, low vector, scale 2: cosine / norm ratio | 0.999 / 1.04 | 0.999 / 1.05 |
-| OOD check, layer 25, PANL (Table 1) | steering, high vector, scale 5: cosine / norm ratio | 0.992 / 0.91 | 0.994 / 0.89 |
-| OOD check, layer 25, PANL (Table 1) | steering, low vector, scale 5: cosine / norm ratio | 0.994 / 1.10 | 0.996 / 1.12 |
+| OOD check, layer 25, PANL (Table 1) | steering, high vector, scale 2: cosine / norm ratio | 0.999 / 0.96 | 0.999 / 0.97 |
+| OOD check, layer 25, PANL (Table 1) | steering, low vector, scale 2: cosine / norm ratio | 0.999 / 1.04 | 0.999 / 1.04 |
+| OOD check, layer 25, PANL (Table 1) | steering, high vector, scale 5: cosine / norm ratio | 0.992 / 0.91 | 0.991 / 0.92 |
+| OOD check, layer 25, PANL (Table 1) | steering, low vector, scale 5: cosine / norm ratio | 0.994 / 1.10 | 0.994 / 1.09 |
 | OOD check, layer 25, PANL (Table 1) | noising (mean replacement): cosine / norm ratio | 0.999 / 0.995 | 0.999 / 1.008 |
-| OOD check, layer 25, PANL (Table 1) | patching (clean vs corruption-propagated): cosine / norm ratio | 0.999 / 0.94 | 0.998 / 1.04 (corrupted ÷ clean) |
+| OOD check, layer 25, PANL (Table 1) | patching (clean vs corruption-propagated): cosine / norm ratio | 0.999 / 0.94 | 0.998 / 0.97 (corrupted ÷ clean) |
 | OOD check, layer 25, PANL+1 (Table 1) | natural pairwise cosine [p5, p95] / norm ratio [p5, p95] | [0.997, 1.000] / [0.90, 1.11] | [0.997, 1.000] / [0.89, 1.12] |
-| OOD check, layer 25, PANL+1 (Table 1) | steering, high vector, scale 2: cosine / norm ratio | 0.999 / 1.04 | 0.999 / 1.05 |
-| OOD check, layer 25, PANL+1 (Table 1) | steering, low vector, scale 2: cosine / norm ratio | 0.998 / 0.96 | 0.999 / 0.96 |
-| OOD check, layer 25, PANL+1 (Table 1) | steering, high vector, scale 5: cosine / norm ratio | 0.995 / 1.10 | 0.996 / 1.12 |
-| OOD check, layer 25, PANL+1 (Table 1) | steering, low vector, scale 5: cosine / norm ratio | 0.993 / 0.91 | 0.993 / 0.90 |
+| OOD check, layer 25, PANL+1 (Table 1) | steering, high vector, scale 2: cosine / norm ratio | 0.999 / 1.04 | 0.999 / 0.96 |
+| OOD check, layer 25, PANL+1 (Table 1) | steering, low vector, scale 2: cosine / norm ratio | 0.998 / 0.96 | 0.999 / 1.04 |
+| OOD check, layer 25, PANL+1 (Table 1) | steering, high vector, scale 5: cosine / norm ratio | 0.995 / 1.10 | 0.992 / 0.92 |
+| OOD check, layer 25, PANL+1 (Table 1) | steering, low vector, scale 5: cosine / norm ratio | 0.993 / 0.91 | 0.994 / 1.10 |
 | OOD check, layer 25, PANL+1 (Table 1) | noising (mean replacement): cosine / norm ratio | 0.999 / 0.999 | 0.999 / 0.998 |
-| OOD check, layer 25, PANL+1 (Table 1) | patching (clean vs corruption-propagated): cosine / norm ratio | 0.999 / 0.98 | 0.999 / 0.97 (corrupted ÷ clean) |
+| OOD check, layer 25, PANL+1 (Table 1) | patching (clean vs corruption-propagated): cosine / norm ratio | 0.999 / 0.98 | 0.999 / 0.98 (corrupted ÷ clean) |
